@@ -9,7 +9,7 @@
 
 #define STRIPBAY_VERSION   "4.2.1"
 // GitHub-Repository (Update-Hinweis, Fehlermeldungen)
-#define STRIPBAY_REPO      "justValgon/StirpBay"
+#define STRIPBAY_REPO      "justValgon/StripBay"
 #define STRIPBAY_WIDEN2(x) L##x
 #define STRIPBAY_WIDEN(x)  STRIPBAY_WIDEN2(x)
 #define STRIPBAY_VERSION_W STRIPBAY_WIDEN(STRIPBAY_VERSION)

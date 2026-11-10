@@ -9,6 +9,7 @@ Fehlerbehebung, kein Protokollwechsel; verträgt sich mit allen 4.x.
   - Eine fremde Meldung, die länger als 15 s unverändert stehen bleibt (Absender weg oder sein Zurücksetzen ausgefallen), wird durch den letzten echten Text ersetzt. Echter Text wird dabei nie angefasst.
   - Bei Ground-State-Befehlen geht ein eigener Text auch dann nicht verloren, wenn gerade eine Meldung im Scratchpad steht.
 - **„Es wurde ein falsches Argument festgestellt“:** Ausnahmen in StripBay und ungültige Argumente von Systemfunktionen werden abgefangen, statt bis in EuroScope durchzuschlagen. Im Chat erscheint dann „StripBay: internal error caught (Ort, Anzahl)“ (höchstens alle 30 s) und die Diagnose (`.strips diag`) enthält die Meldung. Zeitangaben außerhalb des gültigen Bereichs (vACDM, Datalink) lösen den Fehler nicht mehr aus. Tritt die Meldung weiter auf, bitte die Diagnose an ein Issue anhängen.
+- **Repository umbenannt:** Der Update-Hinweis fragt jetzt `justValgon/StripBay` ab (vorher mit Tippfehler `StirpBay`).
 - Prüfung: neue Unit-Tests (Wiederherstellung, Aufräumen fremder Meldungen, Ground State bei stehender Meldung, Fehlerfang); Mehr-Lotsen-Test und Zufallstest (Berlin, Hannover, Leipzig) bestanden.
 
 ## Neu in 4.2.0
