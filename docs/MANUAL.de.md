@@ -35,20 +35,20 @@ EuroScope-Plugin mit eigenem Touch-Fenster für elektronische Flugstreifen, mit 
 
 ## Bauen
 
-### Einfach: Doppelklick auf `INSTALL.bat`
+### Empfohlen: `INSTALL.bat` ausführen
 
-Der Installer erledigt alles auf deinem Windows-PC:
+Der Installer erledigt alles auf Ihrem Windows-PC:
 
-1. Er holt `EuroScopePlugIn.h` und `EuroScopePlugInDll.lib`: entweder direkt neben dem Skript (einfach dort hineinlegen) oder aus deinem EuroScope-Ordner (Unterordner `PlugInEnvironment`). Findet er nichts, fragt er nach dem Ordner.
+1. Er holt `EuroScopePlugIn.h` und `EuroScopePlugInDll.lib`: entweder direkt neben dem Skript (dort ablegen) oder aus Ihrem EuroScope-Ordner (Unterordner `PlugInEnvironment`). Findet er nichts, fragt er nach dem Ordner.
 2. Es sucht den Microsoft-C++-Compiler. Fehlt er, bietet es an, die kostenlosen **Build Tools für Visual Studio 2022** mit "Desktopentwicklung mit C++" über winget zu installieren (einige GB, dauert ein paar Minuten).
 3. Es baut Release/x86 (`StripBay.dll` liegt danach auch neben dem Skript).
 4. Es installiert die DLL nach **`%APPDATA%\EuroScope\Plugins\StripBay\StripBay.dll`** und öffnet den Explorer mit der Datei markiert. Ist StripBay gerade in EuroScope geladen, erst EuroScope schließen.
 
-Klappt der Build nicht, bleiben die Fehlermeldungen im Fenster stehen.
+Schlägt der Build fehl, bleiben die Fehlermeldungen im Fenster stehen.
 
-**Wo liegen die SDK-Dateien?** Meist im Programmordner von EuroScope (dort, wo `EuroScope.exe` liegt), Unterordner `PlugInEnvironment`, manchmal auch in `%APPDATA%\EuroScope\PlugIn`. Beides findet der Installer selbst. Der Installer sucht selbst in den üblichen Ordnern, fragt ein laufendes EuroScope nach seinem Pfad und durchsucht danach Programme und Benutzerordner. Den Programmordner findest du per Rechtsklick auf die EuroScope-Verknüpfung → "Dateipfad öffnen".
+**Wo liegen die SDK-Dateien?** Meist im Programmordner von EuroScope (dort, wo `EuroScope.exe` liegt), Unterordner `PlugInEnvironment`, manchmal auch in `%APPDATA%\EuroScope\PlugIn`. Beides findet der Installer selbst. Der Installer sucht selbst in den üblichen Ordnern, fragt ein laufendes EuroScope nach seinem Pfad und durchsucht danach Programme und Benutzerordner. Den Programmordner finden Sie per Rechtsklick auf die EuroScope-Verknüpfung → "Dateipfad öffnen".
 
-**SDK-Dateien fehlen:** Gibt es bei dir keinen Ordner `PlugInEnvironment`, wurde EuroScope wahrscheinlich nicht mit dem offiziellen Installer von euroscope.hu eingerichtet (z. B. nur entpackt oder kopiert). Dann EuroScope mit dem Installer neu installieren, Einstellungen und Sektorpakete in `%APPDATA%\EuroScope` bleiben dabei erhalten. Alternativ die beiden Dateien `EuroScopePlugIn.h` und `EuroScopePlugInDll.lib` von Hand nach `StripBay\sdk\` legen und den Installer erneut starten.
+**SDK-Dateien fehlen:** Gibt es bei Ihnen keinen Ordner `PlugInEnvironment`, wurde EuroScope wahrscheinlich nicht mit dem offiziellen Installer von euroscope.hu eingerichtet (z. B. nur entpackt oder kopiert). Dann EuroScope mit dem Installer neu installieren, Einstellungen und Sektorpakete in `%APPDATA%\EuroScope` bleiben dabei erhalten. Alternativ die beiden Dateien `EuroScopePlugIn.h` und `EuroScopePlugInDll.lib` von Hand nach `StripBay\sdk\` legen und den Installer erneut starten.
 
 ### Von Hand in Visual Studio
 
@@ -81,7 +81,7 @@ EuroScope ist 32 Bit, deshalb nur x86/Win32.
 
 ## Einstellungsfenster (ab 2.0.20)
 
-Button **Settings** oben (statt Hell/Dunkel) oder `.strips settings`. Darin: Farbschema, Layout, Größe, Fenster (immer im Vordergrund, Vollbild), getrennte Pisten, Taxi In nach dem Verlassen der Piste, Status beim Ziehen auf die Runway (LINEUP/DEPA), Entfernung für Ankünfte, Transition Altitude, Wetter, vACDM, CPDLC (an/aus, Logon-Code, Station, Auto-Logon, Ton), Stands ohne Apron und die Hold-Short-Liste. Texte gibst du über die Bildschirmtastatur oder den Stift ein. Jede Schaltfläche führt den passenden `.strips`-Befehl aus, gespeichert wird wie bisher mit den EuroScope-Einstellungen.
+Button **Settings** oben (statt Hell/Dunkel) oder `.strips settings`. Darin: Farbschema, Layout, Größe, Fenster (immer im Vordergrund, Vollbild), getrennte Pisten, Taxi In nach dem Verlassen der Piste, Status beim Ziehen auf die Runway (LINEUP/DEPA), Entfernung für Ankünfte, Transition Altitude, Wetter, vACDM, CPDLC (an/aus, Logon-Code, Station, Auto-Logon, Ton), Stands ohne Apron und die Hold-Short-Liste. Texte geben Sie über die Bildschirmtastatur oder den Stift ein. Jede Schaltfläche führt den passenden `.strips`-Befehl aus, gespeichert wird wie bisher mit den EuroScope-Einstellungen.
 
 ## Aufteilung der Ansichten (ab 2.0.15)
 
@@ -96,17 +96,17 @@ Weniger ist mehr: breit sind nur die Spalten, in denen gearbeitet wird; Übergab
 | **Apron + DEL** (kein Delivery online) | vorne zusätzlich **DELIVERY** (Pending und On Frequency) |
 | **Delivery**, **All Bays** | wie bisher |
 
-**Station und Bereich getrennt (ab 2.0.17):** Oben wählst du im **Dropdown** die Station (Delivery, Apron, Ground, Tower, All Bays). Rechts daneben, bei getrennten Pisten, ein zweites **Dropdown** für den Bereich: **Combined · North 25R · South 25L** (mit der aktiven Piste). Der Bereich bleibt beim Stationswechsel erhalten, z. B. erst "South", dann zwischen Ground und Tower wechseln. Bei Ground zeigt North/South in allen Spalten nur die Flieger dieser Piste, bei Tower nur die Reihe der Piste.
+**Station und Bereich getrennt (ab 2.0.17):** Oben wählen Sie im **Dropdown** die Station (Delivery, Apron, Ground, Tower, All Bays). Rechts daneben, bei getrennten Pisten, ein zweites **Dropdown** für den Bereich: **Combined · North 25R · South 25L** (mit der aktiven Piste). Der Bereich bleibt beim Stationswechsel erhalten, z. B. erst "South", dann zwischen Ground und Tower wechseln. Bei Ground zeigt North/South in allen Spalten nur die Flieger dieser Piste, bei Tower nur die Reihe der Piste.
 
-**Jeder Streifen nur einmal (ab 2.0.19):** Ein Flieger ohne erkannte Piste steht bei "Combined" nur in der oberen Pistenreihe (RWY-Feld orange mit "?"), bei North/South in der gewählten. Notiz-Streifen gehören zu der Piste, in deren Spalte du sie legst. Intern wird die Reihenfolge jede Sekunde geprüft, sodass kein Streifen doppelt erscheinen kann.
+**Jeder Streifen nur einmal (ab 2.0.19):** Ein Flieger ohne erkannte Piste steht bei "Combined" nur in der oberen Pistenreihe (RWY-Feld orange mit "?"), bei North/South in der gewählten. Notiz-Streifen gehören zu der Piste, in deren Spalte Sie sie legen. Intern wird die Reihenfolge jede Sekunde geprüft, sodass kein Streifen doppelt erscheinen kann.
 
 **Sprache:** Die Oberfläche und die Meldungen im EuroScope-Chat sind ab 2.0.17 durchgehend englisch. Die alten deutschen Befehle (`.strips hell`, `neu`, `notiz`, `zurück`, `piste` …) funktionieren weiter, dazu die englischen (`light`, `dark`, `new`, `note`, `restore`, `runway`, `on`, `off`, `north`, `south`, `both`).
 
 **Stands ohne Apron** (Startup bei Ground): ab Werk `W*`. GAT und Apron 1 bitte ergänzen, z. B. `.strips gndstands W*,G*,A1*` (`*` = beliebig; `reset` = nur W). Diese Flieger erscheinen bei Ground in STARTUP und bei Apron nicht.
 
-**Parken (ab 2.0.33):** Die grüne Marke **P** im STAND-Feld erscheint erst, wenn die Ankunft **am Gate angekommen** ist: am Boden, **langsamer als 3 kt** und – wenn der Stand in `GRpluginStands.txt` eine Lage hat – in ihrem Standkreis. Nur ein Tipp auf das **P** setzt PARK und entfernt den Streifen. Der Rest des STAND-Feldes öffnet die Standauswahl. Setzt jemand anderes PARK (anderer Lotse, GRP), bleibt der Streifen bei dir stehen, bis du selbst parkst. Aus Versehen? In Recover ("parked") zurückholen setzt wieder TXIN.
+**Parken (ab 2.0.33):** Die grüne Marke **P** im STAND-Feld erscheint erst, wenn die Ankunft **am Gate angekommen** ist: am Boden, **langsamer als 3 kt** und – wenn der Stand in `GRpluginStands.txt` eine Lage hat – in ihrem Standkreis. Nur ein Tipp auf das **P** setzt PARK und entfernt den Streifen. Der Rest des STAND-Feldes öffnet die Standauswahl. Setzt jemand anderes PARK (anderer Lotse, GRP), bleibt der Streifen bei Ihnen stehen, bis Sie selbst parkst. Aus Versehen? In Recover ("parked") zurückholen setzt wieder TXIN.
 
-**Synchron über alle Lotsen:** Alles, was den Streifen bei anderen verschiebt, geht über EuroScope an alle mit StripBay: Ground States, Clearance-Flag, CTL/HOV/Intersection (vSID), Hold Short, Durchstarten, Stand (GRP) und jetzt auch die Übergaben **TO TOWER / TO GROUND** bei Abflügen (`.SB_XF_…`, gelten solange der Flieger rollt) und die Lage der Ankünfte **auf der Piste / an Ground abgegeben / zurück im Anflug** (`.SB_AP_…`). Seit 2.0.24 auch die **Zuständigkeit** (DEL / APN / GND / TWR mit Seite, `.SB_RS_…`). Nur lokal bleiben deine Ansicht, der Pistenfilter und weggetippte Streifen.
+**Synchron über alle Lotsen:** Alles, was den Streifen bei anderen verschiebt, geht über EuroScope an alle mit StripBay: Ground States, Clearance-Flag, CTL/HOV/Intersection (vSID), Hold Short, Durchstarten, Stand (GRP) und jetzt auch die Übergaben **TO TOWER / TO GROUND** bei Abflügen (`.SB_XF_…`, gelten solange der Flieger rollt) und die Lage der Ankünfte **auf der Piste / an Ground abgegeben / zurück im Anflug** (`.SB_AP_…`). Seit 2.0.24 auch die **Zuständigkeit** (DEL / APN / GND / TWR mit Seite, `.SB_RS_…`). Nur lokal bleiben Ihre Ansicht, der Pistenfilter und weggetippte Streifen.
 
 ## Spalten und Ground States
 
@@ -128,8 +128,8 @@ Gesetzt wird der Status über die Scratchpad-Kommandos von EuroScope. Ein vorhan
 **Ground-Ansicht:** Ziehen nach **Departing Tower** ist nur die Übergabe an den Tower, **keine Takeoff-Clearance**. Der Ground State bleibt, der Streifen bekommt das Badge **TWR**. In den Details gibt es dort statt Line-up und Startfreigabe den Button **An Tower**. Nimmt der Tower den Flieger auf die Runway, bleibt er in Departing Tower (bei Takeoff mit Badge TO). Ankünfte erscheinen dort nie.
 
 **Tower-Ansicht:**
-- **Taxi / Holding** zeigt alle rollenden Abflüge, die an dich übergebenen oben (Badge **TWR**). Die Übergabe ist nur lokal: Ist Ground ein anderer Lotse, siehst du alle Flieger mit TAXI.
-- Abflüge bleiben nach dem Start stehen, bis du sie **weggeschickt** hast, siehe [Weggeschickt](#weggeschickt-abflüge-nach-dem-start).
+- **Taxi / Holding** zeigt alle rollenden Abflüge, die an Sie übergebenen oben (Badge **TWR**). Die Übergabe ist nur lokal: Ist Ground ein anderer Lotse, sehen Sie alle Flieger mit TAXI.
+- Abflüge bleiben nach dem Start stehen, bis Sie sie **weggeschickt** haben, siehe [Weggeschickt](#weggeschickt-abflüge-nach-dem-start).
 - Ankünfte erscheinen ab 15 NM vor dem Platz in **Final** (`.strips arr` ändert die Entfernung).
 - Runway und Freigaben: siehe nächster Abschnitt.
 - In der **Ground-Ansicht** erscheinen gelandete Ankünfte immer direkt in Taxi In, damit Ground sie sieht, auch wenn der Tower sie noch auf der Runway hat.
@@ -141,7 +141,7 @@ Gesetzt wird der Status über die Scratchpad-Kommandos von EuroScope. Ein vorhan
 
 ## Runway-Bay und Freigaben
 
-Line-up, Takeoff und Landing sind eine Bay: **RUNWAY**. Abflüge und Ankünfte stehen dort in einer gemeinsamen Reihenfolge, die du frei sortierst (z. B. Landung, dann Abflug, dann wieder Landung).
+Line-up, Takeoff und Landing sind eine Bay: **RUNWAY**. Abflüge und Ankünfte stehen dort in einer gemeinsamen Reihenfolge, die Sie frei sortieren (z. B. Landung, dann Abflug, dann wieder Landung).
 
 Rechts oben auf jedem Streifen in der Runway-Bay liegt ein **Freigabefeld**:
 
@@ -152,10 +152,10 @@ Rechts oben auf jedem Streifen in der Runway-Bay liegt ein **Freigabefeld**:
 
 - **Antippen** des Feldes schaltet um. Das ändert nur die Freigabe, der Streifen bleibt an seinem Platz, und es öffnen sich keine Details. Dieselben Buttons gibt es in den Details: **Startfreigabe** bzw. **Landefreigabe**.
 - **Abflug auf die Runway ziehen** setzt LINEUP (mit `.strips takeoff DEPA` gleich die Startfreigabe). Zurück nach Taxi / Holding setzt TAXI.
-- **Ankunft auf die Runway ziehen** legt sie nur auf die Piste, noch ohne Landefreigabe (nur bei dir sichtbar, EuroScope hat dafür keinen Status). Die Landefreigabe hakst du danach ab. Zurück nach Final nimmt eine Landefreigabe zurück.
-- Gelandete Flieger **bleiben auf der Runway**, bis du sie als Tower herausziehst, auch beim Durchstarten. Ziehen nach **Taxi In** gibt sie an Ground ab (nur lokal, StripBay setzt dabei weder TXIN noch nimmt es CTL zurück). Setzt Ground TXIN, wandert der Streifen auch ohne dich nach Taxi In.
+- **Ankunft auf die Runway ziehen** legt sie nur auf die Piste, noch ohne Landefreigabe (nur bei Ihnen sichtbar, EuroScope hat dafür keinen Status). Die Landefreigabe haken Sie danach ab. Zurück nach Final nimmt eine Landefreigabe zurück.
+- Gelandete Flieger **bleiben auf der Runway**, bis Sie sie als Tower herausziehen, auch beim Durchstarten. Ziehen nach **Taxi In** gibt sie an Ground ab (nur lokal, StripBay setzt dabei weder TXIN noch nimmt es CTL zurück). Setzt Ground TXIN, wandert der Streifen auch ohne Sie nach Taxi In.
 
-**Synchron mit allen:** Die Startfreigabe ist der Ground State DEPA, die Landefreigabe das CTL-Flag von vSID. Beides sehen andere Lotsen, TopSky und vSID sofort. Gibt jemand anderes die Freigabe (z. B. CTL im vSID-Tag), springt der Streifen bei dir auf die Runway und ist abgehakt.
+**Synchron mit allen:** Die Startfreigabe ist der Ground State DEPA, die Landefreigabe das CTL-Flag von vSID. Beides sehen andere Lotsen, TopSky und vSID sofort. Gibt jemand anderes die Freigabe (z. B. CTL im vSID-Tag), springt der Streifen bei Ihnen auf die Runway und ist abgehakt.
 
 ### Durchstarten (G/A)
 
@@ -169,8 +169,8 @@ In den Details einer Ankunft im Anflug: **Durchstarten (G/A)**. Die Landefreigab
 ### Landefreigabe (CTL) und vSID
 
 - StripBay verteilt CTL genauso wie vSID, als kurzes Scratchpad `.VSID_CTL_TRUE` bzw. `.VSID_CTL_FALSE`. Der alte Scratchpad-Inhalt wird danach wiederhergestellt.
-- Setzt jemand CTL in vSID (auch du selbst im Tag), wandert der Streifen auf die Runway, abgehakt.
-- Zurückgenommen wird die Freigabe nur durch Antippen von LDG, Ziehen nach Final oder wenn jemand CTL in vSID entfernt. Durchstarten und Landung ändern nichts daran. Hatte nur ein anderer die Freigabe gegeben und nimmt sie zurück, geht der Streifen zurück nach Final. Hast du ihn selbst auf die Runway gelegt, bleibt er dort.
+- Setzt jemand CTL in vSID (auch Sie selbst im Tag), wandert der Streifen auf die Runway, abgehakt.
+- Zurückgenommen wird die Freigabe nur durch Antippen von LDG, Ziehen nach Final oder wenn jemand CTL in vSID entfernt. Durchstarten und Landung ändern nichts daran. Hatte nur ein anderer die Freigabe gegeben und nimmt sie zurück, geht der Streifen zurück nach Final. Haben Sie ihn selbst auf die Runway gelegt, bleibt er dort.
 - Ein CTL-Flag, das gesetzt wurde, bevor StripBay geladen war, kennt StripBay erst, wenn vSID es erneut verteilt.
 
 ## Details bearbeiten
@@ -192,19 +192,19 @@ In den Details (Streifen antippen) lässt sich jeder Wert ändern. Bearbeitbare 
 | Flugregeln | I, V | Flugplan |
 | Funk | V, R, T | |
 | Ground State | Button **Ground state: …**; Line-up/Takeoff nur beim Tower | Ground State in EuroScope |
-| Nächste Frequenz | AUTO, die Berliner Frequenzen, alle Lotsen online | nur bei dir (AUTO = wieder automatisch) |
+| Nächste Frequenz | AUTO, die Berliner Frequenzen, alle Lotsen online | nur bei Ihnen (AUTO = wieder automatisch) |
 | Typ, Ziel, Herkunft, Ausweichflughafen, EOBT, Route, Remarks | Tastatur | Flugplan |
 | Heading, Speed | Tastatur | Assigned Heading/Speed |
 | Scratchpad, Intersection, Hold Short | eigene Editoren wie bisher | |
 | Clearance (PENDING / SENT / CLEARED), Start-/Landefreigabe | Antippen schaltet um; Delivery auch direkt im CLR-Feld des Streifens | Clearance-Flag |
 
-Flugplanänderungen (Route, SID, Piste, Typ, Ziel ...) nimmt EuroScope nur an, wenn kein anderer Lotse den Flieger trackt. Klappt es nicht, steht das im ES-Chat. `.strips icao` zeigt, ob und wo die Stand-Liste gefunden wurde.
+Flugplanänderungen (Route, SID, Piste, Typ, Ziel ...) nimmt EuroScope nur an, wenn kein anderer Lotse den Flieger trackt. Gelingt dies nicht, erscheint eine Meldung im ES-Chat. `.strips icao` zeigt, ob und wo die Stand-Liste gefunden wurde.
 
 ## Streifen erstellen und Recover
 
 **Streifen erstellen:** Button **+ Streifen** oben rechts, Callsign eintippen, **Erstellen**.
-- Gibt es einen Flugplan mit diesem Callsign, entsteht ein normaler Streifen, auch wenn der Flieger sonst keinen bekäme (z. B. VFR, anderer Platz, zu weit weg). Er liegt in der Bay, die zu seinem Ground State passt, und bleibt, bis du ihn entfernst, der Pilot sich abmeldet oder er weiter als 20 NM weg ist. Abflug oder Ankunft ergibt sich aus seinem Flugplan.
-- Ohne Flugplan (oder mit **Als Notiz-Streifen**) entsteht ein **Notiz-Streifen**: grauer Streifen mit dem Text und der Marke NOTIZ, z. B. für ein Fahrzeug, eine Pistenkontrolle oder eine Sperrung. Er landet in der ersten Spalte der Ansicht, lässt sich in jede Bay ziehen (auch auf die Runway, um sie zu blockieren) und kann einen **Hold Short** tragen. Notiz-Streifen sind nur bei dir sichtbar und setzen keinen Status.
+- Gibt es einen Flugplan mit diesem Callsign, entsteht ein normaler Streifen, auch wenn der Flieger sonst keinen bekäme (z. B. VFR, anderer Platz, zu weit weg). Er liegt in der Bay, die zu seinem Ground State passt, und bleibt, bis Sie ihn entfernen, der Pilot sich abmeldet oder er weiter als 20 NM weg ist. Abflug oder Ankunft ergibt sich aus seinem Flugplan.
+- Ohne Flugplan (oder mit **Als Notiz-Streifen**) entsteht ein **Notiz-Streifen**: grauer Streifen mit dem Text und der Marke NOTIZ, z. B. für ein Fahrzeug, eine Pistenkontrolle oder eine Sperrung. Er landet in der ersten Spalte der Ansicht, lässt sich in jede Bay ziehen (auch auf die Runway, um sie zu blockieren) und kann einen **Hold Short** tragen. Notiz-Streifen sind nur bei Ihnen sichtbar und setzen keinen Status.
 
 **Recover:** Button **Recover** oben rechts (orange mit Zahl, wenn etwas drin ist).
 - Darin stehen von Hand **entfernte** Streifen, **weggeschickte** Abflüge (solange sie noch in Reichweite sind) und entfernte **Notiz-Streifen**, die neuesten oben.
@@ -213,7 +213,7 @@ Flugplanänderungen (Route, SID, Piste, Typ, Ziel ...) nimmt EuroScope nur an, w
 
 ## Apron-Ansicht
 
-**Ohne Delivery (ab 2.0.9):** Ist an deinem Platz kein `<APT>_*DEL` online, zeigt die Apron-Ansicht vorne zusätzlich **PENDING** und **ON FREQUENCY**, der Button heißt dann "Apron + DEL". Für diese Flieger gelten auch die Delivery-Frequenzen nach Stand. Kommt ein Delivery online, verschwinden die beiden Spalten wieder.
+**Ohne Delivery (ab 2.0.9):** Ist an Ihrem Platz kein `<APT>_*DEL` online, zeigt die Apron-Ansicht vorne zusätzlich **PENDING** und **ON FREQUENCY**, der Button heißt dann "Apron + DEL". Für diese Flieger gelten auch die Delivery-Frequenzen nach Stand. Kommt ein Delivery online, verschwinden die beiden Spalten wieder.
 
 Für Apron-Lotsen (Vorfeld): **STARTUP → PUSHBACK → TAXI → TO GROUND**, dazu **TAXI IN**: oben die an Apron übergebenen (TXIN), darunter die noch bei Ground. Siehe [Aufteilung](#aufteilung-der-ansichten-ab-2015).
 
@@ -226,7 +226,7 @@ Für Apron-Lotsen (Vorfeld): **STARTUP → PUSHBACK → TAXI → TO GROUND**, da
 
 Ein Hold Short wird auf dem Streifen als **rote Marke** "HS V1" oben rechts angezeigt, dazu eine rote Linie über den ganzen Streifen.
 
-- **Eintragen (schnell, ab 2.0.7):** auf dem Streifen die **RWY-Zelle** antippen. Es öffnet sich eine Auswahl mit den Pisten des Platzes, der Intersection des Fliegers und den üblichen Haltepunkten. Ein Tipp, fertig. Eigene Eingabe ist dort auch möglich (höchstens 6 Zeichen).
+- **Eintragen (schnell, ab 2.0.7):** auf dem Streifen die **RWY-Zelle** antippen. Es öffnet sich eine Auswahl mit den Pisten des Platzes, der Intersection des Fliegers und den üblichen Haltepunkten. Ein Tipp genügt. Eigene Eingabe ist dort auch möglich (höchstens 6 Zeichen).
 - **Ändern / löschen:** die rote Marke antippen, es kommt dieselbe Auswahl. **Leeren** löscht den Hold Short. Auch in den Details über **Hold Short** oder das Feld HOLD SHORT.
 - **Liste der Haltepunkte ändern:** `.strips hs V1 V3 V4 P1 P2 L3 ...` (mit Leerzeichen getrennt), `.strips hs reset` für die Werte ab Werk.
 - Mit **Line-up** oder **Startfreigabe** ist der Hold Short erledigt und verschwindet von selbst.
@@ -252,7 +252,7 @@ Ein Abflug verschwindet nicht mehr beim Abheben, sondern erst, wenn er **weggesc
 
 - Ist ein Abflug in der Luft, noch nicht weggeschickt und **mindestens 2000 ft über dem Platz** (ab 2.0.13), ist sein Feld **FREQ orange**, wie `HOV` in vSID. Darunter bleibt es neutral, antippen geht trotzdem. **Rot** wird es, sobald er weniger als 1500 ft unter seiner CFL ist, wie `HOV!` in vSID.
 - **FREQ antippen** (nur in der Luft) oder in den Details **Weggeschickt**: StripBay setzt das Handover-Flag (`.VSID_HOV_TRUE`), der Streifen verschwindet. Andere Lotsen und vSID sehen das Flag sofort.
-- Setzt jemand anderes das Flag (im vSID-Tag oder mit StripBay), verschwindet der Streifen auch bei dir.
+- Setzt jemand anderes das Flag (im vSID-Tag oder mit StripBay), verschwindet der Streifen auch bei Ihnen.
 - Aus Versehen weggeschickt: in **Recover** antippen oder `.strips hov CALLSIGN`.
 - In der Ground-Ansicht verschwinden Abflüge schon beim Abheben aus Departing Tower.
 - Sicherheitsnetz: Wer gar nicht weggeschickt wird, verschwindet ab 20 NM Entfernung (`.strips range`, höchstens 20).
@@ -285,13 +285,13 @@ StripBay fragt Hoppie alle 45–75 Sekunden ab, nach dem Senden eine Weile alle 
 | magenta, blinkt | ungelesene Nachricht oder Anfrage, die eine Antwort braucht |
 
 **CPDLC-Fenster** (über die Marke oder in den Details **CPDLC**):
-- Oben Logon- und DCL-Status, die Anfrage des Piloten und **der DCL, wie er gesendet wird**, z. B. `CLR TO EGLL RWY 24R DEP KLF2X INIT CLB 5000FT SQUAWK 1000 ATIS C WHEN RDY CALL FREQ 129.605 IF UNABLE CALL VOICE`. Er kommt aus dem Streifen: Ziel, Piste, SID, CFL, Squawk, CTOT (sonst TSAT), ATIS-Buchstabe und die nächste Frequenz (bei Delivery die Frequenz nach Stand, sonst deine eigene). Fehlt etwas (SID, Squawk, CFL ...), steht dort, was fehlt, und **DCL senden** ist gesperrt.
+- Oben Logon- und DCL-Status, die Anfrage des Piloten und **der DCL, wie er gesendet wird**, z. B. `CLR TO EGLL RWY 24R DEP KLF2X INIT CLB 5000FT SQUAWK 1000 ATIS C WHEN RDY CALL FREQ 129.605 IF UNABLE CALL VOICE`. Er kommt aus dem Streifen: Ziel, Piste, SID, CFL, Squawk, CTOT (sonst TSAT), ATIS-Buchstabe und die nächste Frequenz (bei Delivery die Frequenz nach Stand, sonst Ihre eigene). Fehlt etwas (SID, Squawk, CFL ...), steht dort, was fehlt, und **DCL senden** ist gesperrt.
 - **DCL senden**: Antwortet der Pilot mit **WILCO**, setzt StripBay automatisch das **Clearance-Flag**. **DCL: per Sprechfunk** antwortet "UNABLE, CALL ON VOICE".
 - **Logon annehmen / ablehnen** (ab Werk werden Logons automatisch angenommen, `.strips cpdlc auto aus` schaltet das ab).
 - **Contact / Monitor** mit der nächsten Frequenz, z. B. "CONTACT BERLIN GROUND 121.705".
 - Antworten auf Anfragen des Piloten: **Standby, Unable, Roger, Affirm, Negative**.
 - **Freitext** (Tastatur oder Stift). Ist der Pilot nicht per CPDLC angemeldet, geht er als Telex.
-- **Logoff**, darunter der Verlauf mit Uhrzeit (↑ von dir, ↓ vom Piloten) und den Antworten (WILCO grün, UNABLE rot).
+- **Logoff**, darunter der Verlauf mit Uhrzeit (↑ von Ihnen, ↓ vom Piloten) und den Antworten (WILCO grün, UNABLE rot).
 - Ton bei neuen Anfragen: `.strips cpdlc ton aus` / `an`.
 
 ## Handschrift (Stift) im Editor (ab 2.0.13)
@@ -305,7 +305,7 @@ Die Erkennung macht Windows selbst (Handschrifterkennung von Windows Ink). Sie m
 Die Intersection aus vSID steht bei Abflügen im Feld **INT** direkt neben RWY. **Hellgrün** heißt zugewiesen, **grau** "able for" (wie grün bzw. weiß in vSID).
 
 - Gesetzt wird sie wie gewohnt in der Departure List (vSID-Menü) oder per Scratchpad `+L6` bzw. `-L6`. StripBay übernimmt jede Änderung, auch von anderen Lotsen.
-- **In StripBay setzen:** INT-Feld antippen (oder in den Details INTERSECTION). Es öffnet sich die Tastatur, höchstens 3 Zeichen. **Zugewiesen** setzt sie als zugewiesen, **Able for** als möglich, **Leeren** und dann Zugewiesen entfernt sie. StripBay verteilt das im Format von vSID (`.VSID_INT_L6_TRUE`), dein vSID und alle anderen übernehmen es.
+- **In StripBay setzen:** INT-Feld antippen (oder in den Details INTERSECTION). Es öffnet sich die Tastatur, höchstens 3 Zeichen. **Zugewiesen** setzt sie als zugewiesen, **Able for** als möglich, **Leeren** und dann Zugewiesen entfernt sie. StripBay verteilt das im Format von vSID (`.VSID_INT_L6_TRUE`), Ihr vSID und alle anderen übernehmen es.
 - vSID selbst blendet die Intersection mit der Startfreigabe (DEPA) aus. StripBay zeigt sie weiter an, bis der Streifen verschwindet.
 
 ## Nächste Frequenz
@@ -329,9 +329,9 @@ Das Feld **FREQ** auf jedem Streifen zeigt, wohin der Flieger als Nächstes wech
 | Delivery: Stand **B\***, **C\***, übrige **D\*** | Apron Süd **121.855**, sonst Ground Süd **121.705**, sonst **-** |
 | Delivery: Stand **W\*** | Ground Süd **121.705**, wenn online, sonst **-** |
 
-Die Delivery-Regeln gelten, wenn dein Callsign auf `_DEL` endet oder die Delivery-Ansicht offen ist. Die erste passende Gruppe gewinnt. Ist bei einem Treffer niemand aus der Kette online, bleibt das Feld leer.
+Die Delivery-Regeln gelten, wenn Ihr Callsign auf `_DEL` endet oder die Delivery-Ansicht offen ist. Die erste passende Gruppe gewinnt. Ist bei einem Treffer niemand aus der Kette online, bleibt das Feld leer.
 
-**Es erscheinen nur Stationen, die online sind** (ab 2.0.25 auch Apron): Ist kein Nachbar da, steht im FREQ-Feld **-**. Kommst du selbst in der Kette vor, zählt nichts danach (das wäre deine eigene Vertretung, kein Nachbar): Sitzt du auf Ground Süd und Apron Süd ist offline, steht bei Süd-Inbounds **-**, nicht deine eigene Frequenz. Alte gespeicherte Werkseinstellungen (`129.605!`, `121.855!`) werden beim Laden automatisch umgestellt, eigene Ketten bleiben. Die Stand-Regel gilt für W1 bis W4 und Unterpositionen wie W4A, nicht für W12. In den Details lässt sich die Frequenz je Flieger auch von Hand setzen.
+**Es erscheinen nur Stationen, die online sind** (ab 2.0.25 auch Apron): Ist kein Nachbar da, steht im FREQ-Feld **-**. Kommen Sie selbst in der Kette vor, zählt nichts danach (das wäre Ihre eigene Vertretung, kein Nachbar): Sitzen Sie auf Ground Süd und Apron Süd ist offline, steht bei Süd-Inbounds **-**, nicht Ihre eigene Frequenz. Alte gespeicherte Werkseinstellungen (`129.605!`, `121.855!`) werden beim Laden automatisch umgestellt, eigene Ketten bleiben. Die Stand-Regel gilt für W1 bis W4 und Unterpositionen wie W4A, nicht für W12. In den Details lässt sich die Frequenz je Flieger auch von Hand setzen.
 
 Ketten ändern (Einträge mit `>` trennen):
 
@@ -384,7 +384,7 @@ Am BER laufen Nord- und Südbahn unabhängig, oft mit zwei Tower-Lotsen. StripBa
 - Passt die Piste im Tag zu keiner Gruppe (leer oder fremd), steht der Streifen bei **beiden** Pisten, damit ihn niemand übersieht. Sein RWY-Feld ist dann orange, in den Details steht "keiner Piste zugeordnet". Er lässt sich in beide Pistenspalten ziehen.
 - Flieger anderer Plätze (z. B. EDDB und ein Nebenplatz aktiv) haben keine Gruppe und stehen ebenfalls bei beiden Pisten.
 
-Die Trennung ist nur aktiv, wenn EDDB einer deiner aktiven Plätze ist. Sonst sieht alles aus wie bisher.
+Die Trennung ist nur aktiv, wenn EDDB einer Ihrer aktiven Plätze ist. Sonst sieht alles aus wie bisher.
 
 | Befehl | Wirkung |
 |---|---|
@@ -399,7 +399,7 @@ Anzeige und Gruppen werden mit den Plugin-Einstellungen gespeichert.
 
 ## Ankünfte und Parkposition
 
-- Ankünfte erscheinen ab 15 NM vor dem Zielplatz in **Final** und wechseln nach **Taxi In**, sobald sie am Boden sind: höchstens 4 NM vom Zielplatz, höchstens 60 kt und weder im Steig- noch im Sinkflug. In der Ground-Ansicht sind sie deshalb erst nach der Landung zu sehen. Zielplatz ist einer deiner aktiven Ankunfts-Flughäfen (Haken "arr" im Runway-Dialog, sonst der Platz aus deinem Callsign).
+- Ankünfte erscheinen ab 15 NM vor dem Zielplatz in **Final** und wechseln nach **Taxi In**, sobald sie am Boden sind: höchstens 4 NM vom Zielplatz, höchstens 60 kt und weder im Steig- noch im Sinkflug. In der Ground-Ansicht sind sie deshalb erst nach der Landung zu sehen. Zielplatz ist einer Ihrer aktiven Ankunfts-Flughäfen (Haken "arr" im Runway-Dialog, sonst der Platz aus Ihrem Callsign).
 - In den Details über **Ground state**: **Taxi in** setzt TXIN (Badge **TXI** statt **ARR**), **Parked** setzt PARK und der Streifen verschwindet – **Parked** steht dort nur, wenn der Flieger am Gate steht (< 3 kt). Schneller: die grüne **P**-Marke im STAND-Feld.
 - Die **Parkposition** kommt aus dem Ground Radar Plugin. GRP verteilt Stands als Scratchpad-Kommando `GRP/S/<Stand>` und legt sie lokal in der Flight-Strip-Annotation 6 ab. StripBay liest beides jede Sekunde, die jüngste Änderung gewinnt. Damit erscheinen auch Stands, die schon vergeben waren, bevor der Streifen da war, und jede spätere Änderung.
 - Fehlt ein Stand, den GRP anzeigt: Flieger anwählen und `.strips stand` eingeben. StripBay schreibt dann in den ES-Chat, was in den Annotationen und im Scratchpad steht.
@@ -407,12 +407,12 @@ Anzeige und Gruppen werden mit den Plugin-Einstellungen gespeichert.
 ## Welche Flieger einen Streifen bekommen
 
 **Abflüge:**
-- Abflugplatz ist einer deiner aktiven Abflug-Flughäfen (Haken "dep" im Runway-Dialog). Ist keiner aktiv, nimmt StripBay den Platz aus deinem Callsign (EDDF_GND → EDDF). Mit `.strips apt` legst du die Plätze fest.
+- Abflugplatz ist einer Ihrer aktiven Abflug-Flughäfen (Haken "dep" im Runway-Dialog). Ist keiner aktiv, nimmt StripBay den Platz aus Ihrem Callsign (EDDF_GND → EDDF). Mit `.strips apt` legen Sie die Plätze fest.
 - Der Flieger ist höchstens 5 NM vom Platz entfernt und langsamer als 50 kt.
 - Der Streifen verschwindet erst, wenn der Flieger in der Luft ist **und** weggeschickt wurde (Handover-Flag), beim Disconnect oder als Sicherheitsnetz ab 20 NM Entfernung (dann komplett, auch aus Recover). Entfernungen mit `.strips range` änderbar.
 
 **Ankünfte:**
-- Zielplatz ist einer deiner aktiven Ankunfts-Flughäfen, höchstens 15 NM entfernt.
+- Zielplatz ist einer Ihrer aktiven Ankunfts-Flughäfen, höchstens 15 NM entfernt.
 - Der Streifen verschwindet bei PARK, beim Disconnect oder wenn der Flieger sich wieder mehr als 25 NM entfernt.
 
 ## Bedienung
@@ -433,7 +433,7 @@ Anzeige und Gruppen werden mit den Plugin-Einstellungen gespeichert.
 | − / + oben rechts | Zoom |
 | × oben rechts | Fenster ausblenden (`.strips show` holt es zurück) |
 
-**Orange Ecke** am Streifen: EuroScope hat den Status nicht angenommen, z. B. weil ein anderer Lotse den Flieger trackt oder deine ES-Version ONFREQ nicht kennt. Der Streifen bleibt dann nur bei dir in der neuen Bay, bis sich der Status in EuroScope ändert. Im ES-Chat steht dazu eine Meldung.
+**Orange Ecke** am Streifen: EuroScope hat den Status nicht angenommen, z. B. weil ein anderer Lotse den Flieger trackt oder Ihre ES-Version ONFREQ nicht kennt. Der Streifen bleibt dann nur bei Ihnen in der neuen Bay, bis sich der Status in EuroScope ändert. Im ES-Chat steht dazu eine Meldung.
 
 ## Befehle (EuroScope-Kommandozeile)
 
@@ -466,7 +466,7 @@ Ab 2.0.20 einheitlich englisch: **`.strips <command> [value]`**, Schalter immer 
 | `.strips profile EDDB` / `EDDP` / `EDDV` / `auto` | Platz-Profil festlegen (sonst automatisch nach Callsign bzw. aktivem Platz) |
 | `.strips freq sid PENEM,ORTAG=126.065; *=126.175` | Abflug-Frequenz nach SID (erste passende Gruppe) |
 | `.strips freq tower [north\|south] 125.955` | Tower je Bahn (nächste Station für Ground/Delivery) |
-| `.strips resync` | Merker deiner Flieger noch einmal an alle schicken |
+| `.strips resync` | Merker Ihrer Flieger noch einmal an alle schicken |
 | `.strips give CS [STELLE]` / `accept CS` / `reject CS` / `take CS` / `offer CS CANCEL` | Übergabe: anbieten, annehmen, ablehnen, übernehmen, zurücknehmen |
 | `.strips responsibility on` / `off` | Zuständigkeit und Übergaben an/aus |
 | `.strips timeline on` / `off` / `range 3 6` / `night on\|off` / `estimate on\|off` | Tower-Zeitstrahl |
@@ -491,7 +491,7 @@ Ab 2.0.20 einheitlich englisch: **`.strips <command> [value]`**, Schalter immer 
 StripBay holt die TSAT aus zwei Quellen, in dieser Reihenfolge:
 
 1. **CDM-Plugin** (rpuig2001): Es legt die TSAT in der Flight-Strip-Annotation ab, StripBay liest sie direkt aus EuroScope. Dafür ist nichts einzustellen.
-2. **vACDM** (VATGER): vACDM gibt seine Daten nicht über EuroScope weiter. StripBay fragt deshalb alle 10 Sekunden denselben Server ab wie dein vACDM-Plugin. Die Adresse liest es aus der `vacdm.txt` neben der geladenen `vACDM.dll`, du musst also nichts eintragen.
+2. **vACDM** (VATGER): vACDM gibt seine Daten nicht über EuroScope weiter. StripBay fragt deshalb alle 10 Sekunden denselben Server ab wie Ihr vACDM-Plugin. Die Adresse liest es aus der `vacdm.txt` neben der geladenen `vACDM.dll`, Sie müssen also nichts eintragen.
 
 Grün wird das TSAT-Feld, solange die aktuelle Zeit zwischen TSAT − 5 und TSAT + 5 Minuten liegt. In den Details steht hinter der Zeit, aus welcher Quelle sie kommt.
 
@@ -504,7 +504,7 @@ Grün wird das TSAT-Feld, solange die aktuelle Zeit zwischen TSAT − 5 und TSAT
 
 ## Rufzeichen und Flughafennamen
 
-StripBay nimmt dieselben Daten wie EuroScope: `ICAO_Airlines.txt` (Airline-Rufzeichen) und `ICAO_Airports.txt` (Flughafennamen) aus deinem Sektorpaket. Die Plugin-Schnittstelle gibt sie nicht heraus, deshalb sucht StripBay die Dateien beim Laden im Hintergrund: im Ordner der DLL und darüber, unter Dokumente\EuroScope, %APPDATA%\EuroScope und im EuroScope-Programmordner.
+StripBay nimmt dieselben Daten wie EuroScope: `ICAO_Airlines.txt` (Airline-Rufzeichen) und `ICAO_Airports.txt` (Flughafennamen) aus Ihrem Sektorpaket. Die Plugin-Schnittstelle gibt sie nicht heraus, deshalb sucht StripBay die Dateien beim Laden im Hintergrund: im Ordner der DLL und darüber, unter Dokumente\EuroScope, %APPDATA%\EuroScope und im EuroScope-Programmordner.
 
 - Airline-Callsigns werden zu Rufzeichen plus Flugnummer: DLH4AB wird LUFTHANSA 4AB, CFG4PN wird CONDOR 4PN.
 - Kennzeichen ohne Airline werden buchstabiert: DIABC wird DELTA INDIA ALFA BRAVO CHARLIE.
@@ -518,7 +518,7 @@ StripBay nimmt dieselben Daten wie EuroScope: `ICAO_Airlines.txt` (Airline-Rufze
 
 ## Scratchpad schreiben
 
-Tippe auf das SP-Feld eines Streifens, auf das Feld SCRATCHPAD in den Details oder auf den Button **Scratchpad**. Es öffnet sich ein Editor mit QWERTZ-Bildschirmtastatur:
+Tippen Sie auf das SP-Feld eines Streifens, auf das Feld SCRATCHPAD in den Details oder auf den Button **Scratchpad**. Es öffnet sich ein Editor mit QWERTZ-Bildschirmtastatur:
 
 - **OK** schreibt den Text ins EuroScope-Scratchpad, **Abbrechen** oder daneben tippen verwirft ihn, **Leeren** löscht alles.
 - Solange der Editor offen ist, funktioniert auch die echte Tastatur (Enter = OK, Esc = Abbrechen). Danach geht der Fokus zurück an EuroScope.
@@ -526,17 +526,17 @@ Tippe auf das SP-Feld eines Streifens, auf das Feld SCRATCHPAD in den Details od
 
 ## Clearance-Flag
 
-StripBay setzt das Flag zuerst über die Scratchpad-Kommandos `CLEA` und `NOTC`. Klappt das bei deiner ES-Version nicht, nutzt es die eingebaute EuroScope-Funktion über einen Radarschirm. Dafür im Plug-ins-Dialog **StripBay** auswählen und **Standard ES radar screen** von "Forbidden to draw on types" nach "Allowed to draw on types" schieben. StripBay zeichnet dort nichts.
+StripBay setzt das Flag zuerst über die Scratchpad-Kommandos `CLEA` und `NOTC`. Funktioniert das bei Ihrer ES-Version nicht, nutzt es die eingebaute EuroScope-Funktion über einen Radarschirm. Dafür im Plug-ins-Dialog **StripBay** auswählen und **Standard ES radar screen** von "Forbidden to draw on types" nach "Allowed to draw on types" schieben. StripBay zeichnet dort nichts.
 
-## Gut zu wissen
+## Hinweise
 
-- Die Reihenfolge innerhalb einer Bay ist nur bei dir. EuroScope kennt keine Reihenfolge, andere Lotsen sehen nur den Status.
-- Ein entfernter Streifen bleibt weg, bis der Flieger den Platz verlässt, du ihn in Recover zurückholst oder `.strips reset` eingibst.
-- Die Übergabe an Tower ist nur bei dir sichtbar. EuroScope hat dafür keinen Ground State.
+- Die Reihenfolge innerhalb einer Bay ist nur bei Ihnen. EuroScope kennt keine Reihenfolge, andere Lotsen sehen nur den Status.
+- Ein entfernter Streifen bleibt weg, bis der Flieger den Platz verlässt, Sie ihn in Recover zurückholen oder `.strips reset` eingeben.
+- Die Übergabe an Tower ist nur bei Ihnen sichtbar. EuroScope hat dafür keinen Ground State.
 - Mit acht Spalten ordnet die Ansicht Alle Bays sie auf kleineren Bildschirmen in zwei Reihen an. `.strips layout spalten` erzwingt eine Reihe.
 - Zum Ausprobieren eignet sich eine Sweatbox-Session oder ein EuroScope-Simulator-Szenario.
 - Landen Berührungen auf dem falschen Monitor, in Windows **Tablet PC-Einstellungen → Setup** öffnen und den Touchscreen dem richtigen Bildschirm zuordnen.
-- ONFREQ und LINEUP gibt es erst in neueren EuroScope-3.2-Versionen. Kennt deine Version sie nicht, greift die orange Ecke (lokal), der Rest funktioniert normal.
+- ONFREQ und LINEUP gibt es erst in neueren EuroScope-3.2-Versionen. Kennt Ihre Version sie nicht, greift die orange Ecke (lokal), der Rest funktioniert normal.
 
 ## Aufbau des Codes
 

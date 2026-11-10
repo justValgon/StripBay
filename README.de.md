@@ -2,52 +2,52 @@
 
 🇬🇧 [English](README.md) · 🇩🇪 Deutsch
 
-Touch-Flugstreifen für **EuroScope**: ein eigenes Fenster mit elektronischen Streifen für Delivery, Apron, Ground und Tower. Fertige Profile für Berlin **EDDB** (Nord/Süd getrennt), Leipzig **EDDP** und Hannover **EDDV**.
+Touch-Flugstreifen für **EuroScope**: ein eigenes Fenster mit elektronischen Flugstreifen für Delivery, Apron, Ground und Tower. Fertige Profile sind für Berlin **EDDB** (Nord/Süd getrennt), Leipzig **EDDP** und Hannover **EDDV** vorhanden.
 
-Autoren: Luis Korb, Sören Pflug · aktuelle Version: **4.1.1**
+Autoren: Luis Korb, Sören Pflug · aktuelle Version: **4.1.2**
 
 ![Details mit Verlauf](docs/img/vorschau-details-verlauf.png)
 
-## Was es kann
+## Funktionsumfang
 
-- **Bays und Drag and Drop:** Jede Verschiebung setzt den Ground State in EuroScope, den auch TopSky, GRP und andere Lotsen sehen. Ändert jemand den Status woanders, wandert der Streifen mit.
-- **Einheitliche Übergabe:** Wer einen Streifen bearbeitet, ist zuständig. Die Übergabe wird der nächsten Stelle angeboten und von ihr angenommen. Ablehnen schickt den Streifen zurück.
-- **Gemischter Betrieb:** Nutzt eine besetzte Stelle StripBay nicht, bleibt die Kette nicht hängen. Zum Beispiel Delivery und Tower mit StripBay, Ground ohne.
-- **Zeitstrahl nach DFS-Vorbild** für Tower: ganze Labels als Taste, Menü per Langdruck, Tag- und Nachtfarben.
-- **Verlauf je Streifen:** Zuständigkeit, Freigaben, Ground State und Übergabe mit Uhrzeit.
+- **Bays und Drag and Drop:** Jede Verschiebung setzt den Ground State in EuroScope. Dieser ist auch für TopSky, das Ground Radar Plugin und andere Lotsen sichtbar. Wird der Status an anderer Stelle geändert, folgt der Streifen automatisch.
+- **Einheitliche Übergabe:** Wer einen Streifen bearbeitet, ist zuständig. Die Übergabe wird der nächsten Stelle angeboten und von dieser angenommen. Bei Ablehnung geht der Streifen an die übergebende Stelle zurück.
+- **Gemischter Betrieb:** Setzt eine besetzte Stelle StripBay nicht ein, wird die Übergabekette dadurch nicht unterbrochen, beispielsweise bei Delivery und Tower mit StripBay und Ground ohne StripBay.
+- **Zeitstrahl nach DFS-Vorbild** für den Tower: Das gesamte Label ist eine Schaltfläche, das Menü öffnet sich durch langes Drücken; Tag- und Nachtdarstellung.
+- **Verlauf je Streifen:** Zuständigkeit, Freigaben, Ground State und Übergaben mit Uhrzeit.
 - **Runway-Bay**, Hold Short, Start- und Landefreigabe, nächste Frequenz, METAR und ATIS.
-- **Synchron zwischen Lotsen** über das Scratchpad, ohne Server.
-- **StripBay Remote:** der Streifen-Bildschirm auf einem zweiten Windows-Gerät, z. B. ein Touchscreen.
+- **Abgleich zwischen den Lotsen** über das Scratchpad, ohne zusätzlichen Server.
+- **StripBay Remote:** Darstellung der Streifen auf einem zweiten Windows-Gerät, beispielsweise einem Touchscreen.
 
 ![Zeitstrahl](docs/img/vorschau-timeline.png)
 
 ## Installation
 
-1. Unter [Releases](../../releases) die neueste `StripBay-X.Y.Z.zip` laden und entpacken.
-2. In EuroScope: **OTHER SET → Plug-ins… → Load** und `StripBay.dll` wählen.
-3. Das Fenster auf den Touchscreen ziehen und **Vollbild** tippen.
+1. Unter [Releases](../../releases) die aktuelle Datei `StripBay-X.Y.Z.zip` herunterladen und entpacken.
+2. In EuroScope **OTHER SET → Plug-ins… → Load** wählen und `StripBay.dll` auswählen.
+3. Das Fenster auf den Touchscreen verschieben und **Vollbild** wählen.
 
-EuroScope ist 32 Bit, die DLL ist deshalb x86.
+EuroScope ist eine 32-Bit-Anwendung, daher wird die DLL für x86 erstellt.
 
-**Alle Lotsen und das Remote-Gerät brauchen dieselbe Hauptversion** (die erste Zahl). Unterschiede bei der zweiten oder dritten Zahl sind unkritisch.
+**Alle Lotsen und das Remote-Gerät benötigen dieselbe Hauptversion** (erste Ziffer). Abweichungen in der zweiten oder dritten Ziffer sind unkritisch.
 
-## Selbst bauen
+## Erstellen aus dem Quellcode
 
-- **GitHub Actions:** Jeder Push auf `main` baut die DLL (Actions → neuester Lauf → Artifacts). Ein Tag `vX.Y.Z` legt zusätzlich ein Release an.
-- **Auf dem eigenen PC:** `INSTALL.bat` doppelklicken. Es sucht das SDK, baut Release/x86 und installiert nach `%APPDATA%\EuroScope\Plugins\StripBay`.
-- **Von Hand:** `StripBay.sln` in Visual Studio 2022 öffnen, **Release / x86** wählen.
+- **GitHub Actions:** Jeder Push auf `main` erzeugt die DLL (Actions → letzter Lauf → Artifacts). Für ein Release den Workflow **Build** manuell starten (Run workflow, Option „release“ aktivieren). Es wird das Release `vX.Y.Z` anhand der Version in `Version.h` angelegt.
+- **Lokal:** `INSTALL.bat` ausführen. Das Skript sucht das SDK, erstellt Release/x86 und installiert nach `%APPDATA%\EuroScope\Plugins\StripBay`.
+- **Manuell:** `StripBay.sln` in Visual Studio 2022 öffnen und **Release / x86** wählen.
 
-`StripBay/sdk/` enthält `EuroScopePlugIn.h` und `EuroScopePlugInDll.lib` aus dem EuroScope-SDK. Diese beiden Dateien gehören dem Autor von EuroScope und fallen nicht unter die MIT-Lizenz.
+Der Ordner `StripBay/sdk/` enthält `EuroScopePlugIn.h` und `EuroScopePlugInDll.lib` aus dem EuroScope-SDK. Diese beiden Dateien gehören dem Autor von EuroScope und fallen nicht unter die MIT-Lizenz.
 
 ## Dokumentation
 
-- [Handbuch](docs/MANUAL.de.md) (nur Deutsch): alle Funktionen, Bedienung, Befehle
+- [Handbuch](docs/MANUAL.de.md) (nur Deutsch): Funktionen, Bedienung, Befehle
 - [Änderungsverlauf](docs/CHANGELOG.de.md) (nur Deutsch)
 - [StripBay Remote](Remote/README.de.txt)
 
 ## Fehler melden
 
-Bitte als [Issue](../../issues/new/choose) mit einer passenden Kategorie. Nützlich sind: Version, Profil (EDDB/EDDP/EDDV), Rolle (DEL/GND/TWR/APN), was du getan hast und was passiert ist, ein Screenshot.
+Fehler bitte als [Issue](../../issues/new/choose) mit passender Kategorie melden. Hilfreich sind folgende Angaben: Version, Profil (EDDB/EDDP/EDDV), eigene Station (DEL/GND/TWR/APN), Beschreibung des Ablaufs und des Fehlverhaltens sowie ein Screenshot.
 
 ## Lizenz
 

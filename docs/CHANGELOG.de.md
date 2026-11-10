@@ -1,5 +1,10 @@
 # Änderungsverlauf
 
+## Neu in 4.1.2
+
+- **Sprache:** Die deutschen Texte (README, Handbuch, Änderungsverlauf, Remote- und SDK-Hinweise) verwenden durchgehend die Anrede „Sie“ und eine sachliche Wortwahl.
+- Keine Funktionsänderung, kein Protokollwechsel.
+
 ## Neu in 4.1.1
 
 - **Lizenz:** MIT (vorher CC0).
@@ -13,7 +18,7 @@
 
 Sind alle Stellen besetzt, aber nur manche nutzen StripBay (z. B. nur Delivery und Tower), läuft die Kette trotzdem durch:
 
-- **Übergabe an eine Stelle ohne StripBay** (wie seit 4.0.0): Sie wird direkt eingetragen, der Streifen ist bei dir erledigt (30 s grau, dann weg). Nichts wartet auf eine Annahme.
+- **Übergabe an eine Stelle ohne StripBay** (wie seit 4.0.0): Sie wird direkt eingetragen, der Streifen ist bei Ihnen erledigt (30 s grau, dann weg). Nichts wartet auf eine Annahme.
 - **Neu: Streifen von einer Stelle ohne StripBay.** Für alle Stellen *nach* ihr ist der Streifen frei. Der Tower sieht den rollenden Abflug wie gewohnt im Holding und macht mit der Weiter-Taste (bzw. dem Tipp aufs Label) sofort den nächsten Schritt, ohne ihn erst übernehmen zu müssen. Dabei wird der Tower zuständig. Für die Stellen *vor* ihr bleibt der Streifen abgegeben und taucht nicht wieder auf.
 - Beispiel Delivery und Tower mit StripBay, Apron und Ground ohne: Delivery gibt nach dem Startup ab (direkt an Apron). Apron und Ground arbeiten in EuroScope. Sobald der Flieger rollt, steht er beim Tower im Holding; Tippen = Line-up. Ankünfte gibt der Tower direkt an Ground ab.
 - Ob eine Stelle StripBay nutzt, erkennt StripBay selbst (Anmeldung beim Einloggen). Einzustellen ist nichts.
@@ -22,7 +27,7 @@ Sind alle Stellen besetzt, aber nur manche nutzen StripBay (z. B. nur Delivery u
 
 - **History** in den Details und im Menü am Zeitstrahl-Label zeigt, was mit dem Flieger passiert ist, neueste Zeile oben: Ground State, Clearance, Zuständigkeit, Übergabe angeboten/abgelehnt, Hold Short, Line-up, Landefreigabe, Go around, Push-Richtung, Reihenfolge, Weggeschickt.
 - Jede Zeile hat die Uhrzeit (UTC) und, wo es feststeht, **(you)** oder **(other)**. Bei der Zuständigkeit steht die Stelle selbst in der Zeile. Welcher andere Lotse etwas gesetzt hat, verrät EuroScope nicht.
-- Der Verlauf wird bei dir mitgeschrieben, solange dein StripBay läuft (höchstens 40 Zeilen je Flieger). Er wird nicht an andere geschickt; auf dem Remote-Gerät ist er zu sehen.
+- Der Verlauf wird bei Ihnen mitgeschrieben, solange Ihr StripBay läuft (höchstens 40 Zeilen je Flieger). Er wird nicht an andere geschickt; auf dem Remote-Gerät ist er zu sehen.
 - In den Details heißen die Tasten jetzt kürzer **Clearance** / **Revoke CLR** und **Remove**, damit History Platz hat.
 
 ## Neu in 4.0.0
@@ -34,12 +39,12 @@ Großes Aufräumen: eine einzige Regel für Übergaben, der Zeitstrahl nach dem 
 Egal ob Weiter-Taste ▶, Ziehen, Menü, Zeitstrahl oder Befehl, es gilt immer dasselbe:
 
 1. **Wer einen Streifen bearbeitet, ist zuständig.**
-2. **Übergeben heißt anbieten.** Die nächste Stelle sieht den Streifen hervorgehoben (nach 30 s blinkend, nach 60 s mit Ton) und nimmt an: mit **ACCEPT**, mit der Weiter-Taste (jetzt ein orangefarbener Haken ✓) oder im Zeitstrahl durch Tippen aufs Label. Bis dahin bleibt der Streifen bei dir und zeigt „→ TWR“.
-3. **Ablehnen oder zurücknehmen:** Der Streifen steht wieder ganz bei dir (ein rollender Abflug geht aus der Übergabe-Spalte zurück nach Taxi).
-4. **Nach der Annahme** ist er bei dir noch 30 s grau zu sehen, dann weg.
+2. **Übergeben heißt anbieten.** Die nächste Stelle sieht den Streifen hervorgehoben (nach 30 s blinkend, nach 60 s mit Ton) und nimmt an: mit **ACCEPT**, mit der Weiter-Taste (jetzt ein orangefarbener Haken ✓) oder im Zeitstrahl durch Tippen aufs Label. Bis dahin bleibt der Streifen bei Ihnen und zeigt „→ TWR“.
+3. **Ablehnen oder zurücknehmen:** Der Streifen steht wieder ganz bei Ihnen (ein rollender Abflug geht aus der Übergabe-Spalte zurück nach Taxi).
+4. **Nach der Annahme** ist er bei Ihnen noch 30 s grau zu sehen, dann weg.
 5. **Die nächste Stelle hat kein StripBay** (oder hat die Zuständigkeit ausgeschaltet): Sie wird direkt eingetragen, es wartet nichts auf eine Annahme. StripBay erkennt das selbst: Jede Stelle mit StripBay meldet sich beim Einloggen an (`.SB_UN_<Stelle>`).
-6. **Grauer Streifen (kommt gleich zu dir):** Weiter-Taste oder **Take over** übernimmt ihn, ohne dass die Stelle davor etwas tun muss.
-7. **Ein Lotse ohne StripBay schiebt den Flieger weiter**, als deine Stelle ihn führt (z. B. Push, während Delivery noch eingetragen ist): Deine Zuständigkeit gilt dann nicht mehr, der Streifen wird grau und verschwindet. Er rutscht nirgends zurück.
+6. **Grauer Streifen (kommt gleich zu Ihnen):** Weiter-Taste oder **Take over** übernimmt ihn, ohne dass die Stelle davor etwas tun muss.
+7. **Ein Lotse ohne StripBay schiebt den Flieger weiter**, als Ihre Stelle ihn führt (z. B. Push, während Delivery noch eingetragen ist): Ihre Zuständigkeit gilt dann nicht mehr, der Streifen wird grau und verschwindet. Er rutscht nirgends zurück.
 8. **Delivery führt bis zum Startup.** Die Weiter-Taste übergibt danach, statt selbst zu pushen.
 
 Weggefallen sind dafür: Streifen **anfordern** (Request/Give, `.SB_RQ_`), das **Bestätigen** für Delivery (`.SB_AK_`) und der Sonderfall, dass Delivery abgegebene Streifen minutenlang behält. Befehle: `.strips give CS [STELLE]`, `accept CS`, `reject CS`, `take CS`, `offer CS CANCEL`.
@@ -71,10 +76,10 @@ Grundlage ist die veröffentlichte Beschreibung der DFS-Planungsanzeige (Bergner
 - **Off:** StripBay trägt **niemanden als zuständig** ein, auch nicht, wer einen Streifen bearbeitet (verschieben, Status, Freigaben).
   - Die Streifen stehen nur nach ihrem Ground State in den Spalten. Nichts wird mehr nach Zuständigkeit ausgeblendet oder grau angekündigt.
   - Das Zuständigkeitsfeld oben rechts am Streifen, die Zeile RESPONSIBLE in den Details sowie Übergeben, Annehmen, Ablehnen und Anfordern sind weg. Es gibt auch kein Blinken und keinen Ton für Angebote.
-  - Beim Ausschalten gibt StripBay deine bestehenden Zuständigkeiten für alle frei (`.SB_RS_NONE`) und nimmt deine offenen Angebote und Anforderungen zurück.
-  - Die Einstellung gilt für deine StripBay. Lotsen mit eingeschalteter Zuständigkeit können sich weiter eintragen, bei dir zählt das nicht.
+  - Beim Ausschalten gibt StripBay Ihre bestehenden Zuständigkeiten für alle frei (`.SB_RS_NONE`) und nimmt Ihre offenen Angebote und Anforderungen zurück.
+  - Die Einstellung gilt für Ihre StripBay. Lotsen mit eingeschalteter Zuständigkeit können sich weiter eintragen, bei Ihnen zählt das nicht.
 - **On:** wie bisher.
-- **Behoben: Push eines anderen Lotsen landet nicht mehr in PENDING.** Warst du noch als zuständig eingetragen und hat ein anderer Lotse den Flieger weitergeschoben (ohne StripBay oder mit abgeschalteter Zuständigkeit), stand der Streifen bei dir in der ersten Spalte, bei Delivery also in PENDING. Jetzt kommt er in die Spalte, die seinem Stand am nächsten ist (bei Delivery STARTUP), und rutscht nie zurück an den Anfang. Das gilt ebenso für die anderen Stationen.
+- **Behoben: Push eines anderen Lotsen landet nicht mehr in PENDING.** Waren Sie noch als zuständig eingetragen und hat ein anderer Lotse den Flieger weitergeschoben (ohne StripBay oder mit abgeschalteter Zuständigkeit), stand der Streifen bei Ihnen in der ersten Spalte, bei Delivery also in PENDING. Jetzt kommt er in die Spalte, die seinem Stand am nächsten ist (bei Delivery STARTUP), und rutscht nie zurück an den Anfang. Das gilt ebenso für die anderen Stationen.
 - StripBay Remote 3.0 verbindet sich weiter mit 3.1. Damit auch das Gerät die Felder ausblendet, dort ebenfalls 3.1 verwenden (Ordner **Remote** neu kopieren).
 
 ## Neu in 3.0.1
@@ -113,7 +118,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
   - Ordner **Remote** auf das andere Gerät kopieren und StripBayRemote.exe starten. **Search** findet EuroScope im Netz (sonst PC-Name oder IP eingeben), Code eingeben, **Connect**.
   - Danach verbindet sich das Gerät beim Start von selbst.
 - **Was je Gerät gilt:** Zoom, Layout, Hell/Dunkel, Vollbild, „immer oben“ und die Fensterposition. Gespeichert wird das in `%APPDATA%\StripBay\StripBayRemote.ini`.
-- **Was für die Sitzung gilt:** Ansicht und Bereich (Delivery, Apron, Ground, Tower, Nord/Süd) bestimmen, welche Stelle du bist (Zuständigkeit, Angebote, nächste Frequenz). Wechselst du sie am Gerät, zieht das Fenster am PC mit und umgekehrt.
+- **Was für die Sitzung gilt:** Ansicht und Bereich (Delivery, Apron, Ground, Tower, Nord/Süd) bestimmen, welche Stelle Sie sind (Zuständigkeit, Angebote, nächste Frequenz). Wechseln Sie sie am Gerät, zieht das Fenster am PC mit und umgekehrt.
 - **Töne und Meldungen** von StripBay kommen auch auf dem Gerät, die Meldungen unten im Fenster.
 - **Verbindung weg:** Das Fenster wird abgedunkelt („NOT CONNECTED“) und nimmt nichts an, damit keine Eingabe verloren geht. Alle 3 s verbindet es sich neu.
 - **Sicherheit:** Ohne den Code wird nichts angenommen. `.strips remote code new` erzeugt einen neuen Code und trennt alle Geräte. Ohne `remote on` hört StripBay gar nicht ins Netz.
@@ -213,7 +218,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 - **PDC halbautomatisch:** Fragt ein Pilot per PDC an und sind alle Daten da, zeigt das CLR-Feld eine grüne, blinkende Taste **PDC** – ein Tipp sendet. Fehlt etwas (oder Hoppie ist nicht verbunden), öffnet sich wie bisher das Fenster und zeigt, was fehlt.
 - **Startup-Vorschlag (CDM):** Pending und On Freq sind nach **TSAT** sortiert (früheste oben, ohne TSAT unten). Ist das TSAT-Fenster erreicht (±5 min), blinkt der Strip grün umrandet. Ein-/ausschalten: `.strips tsatsort on|off`.
-- **TOBT an vACDM:** TSAT-Feld antippen → **NOW / +5 / +10 / +15 / +20 / +30**. StripBay meldet die TOBT bestätigt an den vACDM-Server (wie das vACDM-Plugin, PATCH /api/v1/pilots/…); vACDM rechnet die TSAT neu. Befehl: `.strips tobt CS NOW|+MIN|HHMM`. Hinweis: der vACDM-Server muss Änderungen von dir annehmen (beim vACDM-Plugin: `.vacdm master`).
+- **TOBT an vACDM:** TSAT-Feld antippen → **NOW / +5 / +10 / +15 / +20 / +30**. StripBay meldet die TOBT bestätigt an den vACDM-Server (wie das vACDM-Plugin, PATCH /api/v1/pilots/…); vACDM rechnet die TSAT neu. Befehl: `.strips tobt CS NOW|+MIN|HHMM`. Hinweis: der vACDM-Server muss Änderungen von Ihnen annehmen (beim vACDM-Plugin: `.vacdm master`).
 - **Eigene Plätze aus Datei:** `StripBayAirports.txt` neben der StripBay.dll (Vorlage: `.strips airportfile template`, neu laden: `.strips airportfile reload`). Je Platz `[ICAO]` mit city, runways, split, rwyA/rwyB, apron, splitGnd, autoHandoffFt, dep/depA/depB, arr/arrA/arrB, twr/twrA/twrB, freqStand, freqDel, gndStands, holdShort, intA/intB, sidFreq. Plätze aus der Datei gehen den eingebauten vor.
 - **Einstellungen exportieren/importieren:** `.strips export` schreibt alle StripBay-Einstellungen nach `StripBaySettings.txt` neben der DLL (ohne Hoppie-Code; mit: `.strips export code`), `.strips import` liest sie ein (danach StripBay neu laden für Fenster und Ansicht).
 - **Protokoll für die Fehlersuche:** `.strips log on` schreibt `StripBay.log` neben die DLL (alle 5 s, die letzten 5000 Zeilen): Meldungen, gesendete und empfangene Sync-Nachrichten, Ground-State-Wechsel, Verschiebungen. `.strips log off` beendet es.
@@ -224,7 +229,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 - **Designator-Strip** (Trennstreifen, wie die „designator strips“ auf Papier-Strip-Boards): Button **+ Strip** → Text eingeben → **Designator**. Ohne Text heißt er „RUNWAY OBSTRUCTED“. Er ist ein farbiges, schraffiertes Band, lässt sich in jede Bay ziehen (auch auf eine gesperrte Piste), nur lokal. Mit OBSTRUCTED/CLOSED/VEHICLE/BLOCK im Text rot. Befehl: `.strips designator BAY TEXT`.
 - **Getrennte Pisten:** Strip auf die andere Pistenseite ziehen geht jetzt wirklich (vorher blockiert) und ändert die Piste im Flugplan.
 - **Übergabe ablehnen:** Im Menü oben rechts bzw. in den Details **REJECT**. Beim Anbietenden steht 30 s rot „REJECTED …“ mit Ton. Befehl: `.strips reject CS`.
-- **Erinnerung:** Ist ein Angebot an dich lange nicht angenommen, kommt einmal ein Ton und eine Meldung (seit 2.0.85 nach 60 s, Blinken nach 30 s). Zeit: `.strips offerremind SEKUNDEN` (0 = aus).
+- **Erinnerung:** Ist ein Angebot an Sie lange nicht angenommen, kommt einmal ein Ton und eine Meldung (seit 2.0.85 nach 60 s, Blinken nach 30 s). Zeit: `.strips offerremind SEKUNDEN` (0 = aus).
 - **Töne je Ereignis:** request (CPDLC-Anfrage), wilco, unable, offer (Übergabe). Auswahl: triple, chime, double, low, single, off. `.strips sound offer chime`, Übersicht `.strips sounds`, Probehören `.strips beep wilco`.
 - **Push-Richtung:** In Startup und Pushback das Feld **PB** antippen → N / E / S / W (Nase). Für alle synchron (`.SB_PB_`), Befehl `.strips pushdir CS N`.
 - **Spaltenbreiten:** Rand zwischen zwei Bays ziehen (Maus: Pfeil ↔). Gespeichert je Ansicht; zurück mit `.strips colw reset`.
@@ -232,7 +237,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 ## Neu in 2.0.79
 
-- **Angebotene Strips blinken:** Ein Strip, der dir zur Übergabe geschickt wird, ist zuerst leicht orange; nimmst du ihn nach 5 Sekunden noch nicht an, blinkt er, bis du oben rechts auf ACCEPT tippst.
+- **Angebotene Strips blinken:** Ein Strip, der Ihnen zur Übergabe geschickt wird, ist zuerst leicht orange; nehmen Sie ihn nach 5 Sekunden noch nicht an, blinkt er, bis Sie oben rechts auf ACCEPT tippen.
 
 ## Neu in 2.0.78
 
@@ -333,7 +338,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 - **Nächster Lotse mit einem Tipp:** In den Details gibt es den Knopf „→ GND“ (bzw. TWR, APN …) – macht die nächste Stelle zuständig. Auch in der Auswahl „Responsible“ steht sie ganz oben. Befehl: `.strips nextresp CALLSIGN`.
 - **Inbound/Outbound von Hand:** Knopf „Make inbound“ / „Make outbound“ in den Details (synchron). Befehl: `.strips inbound|outbound|flip CALLSIGN`.
-- **Diversions nur noch von Hand:** Knopf „Diversion“ in den Details trägt den Flieger als Ankunft an deinem Platz ein (synchron, DIV-Pill). Die automatische Erkennung ist raus. Befehl: `.strips divert CALLSIGN [ICAO|OFF]`.
+- **Diversions nur noch von Hand:** Knopf „Diversion“ in den Details trägt den Flieger als Ankunft an Ihrem Platz ein (synchron, DIV-Pill). Die automatische Erkennung ist raus. Befehl: `.strips divert CALLSIGN [ICAO|OFF]`.
 - **Final grau**, solange ein anderer Lotse (Anflug) den Flieger assumed hat.
 - **Flieger ohne Flugplan (NOFP)** bekommen keinen Streifen.
 - **Hannover:** Tower-Pisten wie auf der Karte untereinander (09L/27R oben, 09C/27C flach in der Mitte, 09R/27L unten), daneben Helipad H2/H3 über AREA. Ohne Apron heißt die Ground-Ansicht nur „Ground“ (kein „+ Apron“).
@@ -352,9 +357,9 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 - **PDC statt CPDLC:** Datalink nur noch für PDC (Pre-Departure Clearance) über Hoppie. CPDLC-Logons werden mit "UNABLE PDC ONLY" abgelehnt. Format wie an den Plätzen der FIR Bremen (TopSky): `CLD 1215 261101 EDDB PDC 001 @EWG4AB@ CLRD TO @EGLL@ OFF @24R@ VIA @KLF2X@ CLIMB @5000FT@ SQUAWK @1000@ ADT @1230@ NEXT FREQ @120.340@ ATIS @C@` (ADT = TSAT, bei Slot CTOT). Das Fenster heißt "PDC" mit Send/Resend PDC und "PDC: call on voice".
 - **Farblich hervorheben:** In den Details oben rechts Farbknöpfe (keine, gelb, grün, blau, rot, lila); das Streifenpapier bekommt die Farbe, synchron bei allen (`.SB_HL_`, Befehl `.strips hl CALLSIGN 0-5`).
 - **Fenster-Knopf:** im Vollbild "Exit full" statt "Window"; die Einstellungszeile heißt "Strip window".
-- **Pisten gelb / rot:** Kopf einer Runway-Bay antippen schaltet die Piste gelb (CAUTION) → rot (CLOSED) → frei. Der Kopf wird eingefärbt, und ein farbiger Marker-Streifen "… CAUTION/CLOSED" steht in der Runway-Bay, der sich dort normal verschieben lässt. (Nur bei dir – EuroScope bietet dafür keinen Sync-Weg ohne Flieger.)
+- **Pisten gelb / rot:** Kopf einer Runway-Bay antippen schaltet die Piste gelb (CAUTION) → rot (CLOSED) → frei. Der Kopf wird eingefärbt, und ein farbiger Marker-Streifen "… CAUTION/CLOSED" steht in der Runway-Bay, der sich dort normal verschieben lässt. (Nur bei Ihnen – EuroScope bietet dafür keinen Sync-Weg ohne Flieger.)
 - **Hannover, Tower:** eigene **TAXI**-Bay (rollende Abflüge, Ankünfte nach der Landung), HOLDING nur noch übergebene Abflüge; Helipad-Bay schmaler, dazu **AREA** (Hubschrauber ohne Helipad); die Bay der Centerbahn ist schmaler.
-- **Abgeben = grau, dann weg:** Gibst du einen Flieger ab (z. B. Tower an Ground), bleibt er bei dir noch 60 s grau sichtbar und verschwindet dann.
+- **Abgeben = grau, dann weg:** Geben Sie einen Flieger ab (z. B. Tower an Ground), bleibt er bei Ihnen noch 60 s grau sichtbar und verschwindet dann.
 
 ## Neu in 2.0.55
 
@@ -381,7 +386,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 ## Neu in 2.0.50
 
-- **Berlin Tower-Frequenzen fest nach Bahn:** Nordbahn **120.030**, Südbahn **118.805** – auch wenn nur ein Tower online ist (er hört beide ab). Bist du selbst Tower, geht es direkt zum Radar.
+- **Berlin Tower-Frequenzen fest nach Bahn:** Nordbahn **120.030**, Südbahn **118.805** – auch wenn nur ein Tower online ist (er hört beide ab). Sind Sie selbst Tower, geht es direkt zum Radar.
 
 ## Neu in 2.0.49
 
@@ -397,12 +402,12 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 ## Neu in 2.0.47
 
-- **Keine Übergabe-Spalten mehr** (TO GROUND, TO TOWER, HANDOVER, Tower-"TO GROUND"): Die Zuständigkeit regelt das. Übergibst du (Details "To Ground"/"To Tower", Weiter-Taste ▶, Taxi In an Apron), wird die übernehmende Stelle zuständig und der Streifen verschwindet bei dir. Streifen anderer Stellen siehst du nur, wenn sie gleich zu dir kommen (grau, Vorankündigung), du sie angefordert hast oder in "All Bays".
+- **Keine Übergabe-Spalten mehr** (TO GROUND, TO TOWER, HANDOVER, Tower-"TO GROUND"): Die Zuständigkeit regelt das. Übergiben Sie (Details "To Ground"/"To Tower", Weiter-Taste ▶, Taxi In an Apron), wird die übernehmende Stelle zuständig und der Streifen verschwindet bei Ihnen. Streifen anderer Stellen sehen Sie nur, wenn sie gleich zu Ihnen kommen (grau, Vorankündigung), Sie sie angefordert haben oder in "All Bays".
 
 ## Neu in 2.0.46
 
 - **Anforderungen synchron:** Stellen mit und ohne Seite (APN / APNN, GND / GNDS) gelten jetzt als dieselbe, Anforderung und "zuständig" passen damit auch bei geteiltem Ground/Apron. Kann EuroScope das Scratchpad nicht setzen (Flieger von jemand anderem getrackt), steht das einmal im ES-Chat.
-- **Vorankündigung:** Was gleich zu dir kommt, siehst du vorher **grau**: Ground sieht Abflüge, die beim Apron schon rollen; Tower sieht rollende Abflüge (Taxi, an Ground); Ground sieht gelandete Ankünfte, die der Tower noch nicht abgegeben hat; Apron sieht Ankünfte bei Ground. Nach der Übergabe erscheinen sie in Farbe.
+- **Vorankündigung:** Was gleich zu Ihnen kommt, sehen Sie vorher **grau**: Ground sieht Abflüge, die beim Apron schon rollen; Tower sieht rollende Abflüge (Taxi, an Ground); Ground sieht gelandete Ankünfte, die der Tower noch nicht abgegeben hat; Apron sieht Ankünfte bei Ground. Nach der Übergabe erscheinen sie in Farbe.
 - **Apron ohne Ground:** keine TO-GROUND-Spalte, stattdessen **TO TOWER** (auch Details-Button und Weiter-Taste).
 - **Nächste Frequenz (Abflüge):** Delivery → Apron bzw. Ground (nach Stand) → Tower → erst dann Radar. Apron → Ground → Tower → Radar. Ground → Tower → Radar.
 - **vACDM-Fehler:** rote Marke "vACDM: ..." oben neben der Uhr, TSAT-Felder orange ("ERR" ohne TSAT).
@@ -410,7 +415,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 ## Neu in 2.0.45
 
-- **Ground/Apron getrennt nach Zuständigkeit:** Ist Apron zuständig, sieht Ground den Streifen nicht (und umgekehrt). Ausnahmen: deine eigenen Übergabe-Bays (TO GROUND bei Apron, Taxi In an Apron bei Ground) und Streifen, die du angefordert hast oder per Top-down mitmachst.
+- **Ground/Apron getrennt nach Zuständigkeit:** Ist Apron zuständig, sieht Ground den Streifen nicht (und umgekehrt). Ausnahmen: Ihre eigenen Übergabe-Bays (TO GROUND bei Apron, Taxi In an Apron bei Ground) und Streifen, die Sie angefordert haben oder per Top-down mitmachen.
 - **Streifen anfordern:** In den Details "Request" (bei Streifen einer anderen Stelle) oder im "+ Strip"-Editor Callsign eingeben und **Request** (auch für ausgeblendete Streifen), Befehl `.strips request CALLSIGN` (nochmal = zurücknehmen). Bei der zuständigen Stelle **blinkt** der Streifen (oranger Rahmen, Marke "REQ <Stelle>"). Tipp auf die Marke bzw. "Give" in den Details (`.strips give CALLSIGN`) übergibt die Zuständigkeit an den Anfordernden. Synchron über `.SB_RQ_`.
 - **Angewählter Streifen** nur noch umrahmt, ohne andere Papierfarbe.
 - Blinken (Anforderung, DCL) läuft jetzt gleichmäßig (alle 0,5 s neu gezeichnet).
@@ -418,12 +423,12 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 ## Neu in 2.0.44
 
 - **Weiter-Taste ▶** rechts oben auf jedem Streifen: schiebt ihn in die nächste Bay. Abflüge: Pending → On Freq → Startup → Pushback → Taxi → (Apron: an Ground, Ground: an Tower, Tower: Runway) → Takeoff. Ankünfte: Final → Runway → Landefreigabe → Taxi In → (an Apron) → geparkt (nur am Gate). Ein-/ausschalten: Einstellungen → "Next bay button" bzw. `.strips nextbtn on|off`.
-- **Platz wählen = dessen Flieger:** Wählst du in den Einstellungen einen Platz (z. B. EDDV), zeigt StripBay nur noch die Flieger dieses Platzes; "Auto" nimmt wieder die aktiven Plätze.
+- **Platz wählen = dessen Flieger:** Wählen Sie in den Einstellungen einen Platz (z. B. EDDV), zeigt StripBay nur noch die Flieger dieses Platzes; "Auto" nimmt wieder die aktiven Plätze.
 - **Einstellungen:** "Stands without apron", "Hold short list" und die beiden Intersection-Zeilen sind raus (die Befehle `.strips gndstands`, `holdshort`, `intersections` gibt es weiter). "Drag onto runway sets" heißt jetzt **Line-up** / **Takeoff**.
 
 ## Neu in 2.0.43
 
-- **Zuständig = sichtbar:** Ist deine Station als zuständig eingetragen, siehst du den Streifen immer, auch außerhalb deines Bereichs (andere Piste, andere Bay, GAT/W-Stand). Mit Top-down gilt das auch für die unbesetzten unteren Stationen, die du mitmachst (Tower allein: GND, APN und DEL).
+- **Zuständig = sichtbar:** Ist Ihre Station als zuständig eingetragen, sehen Sie den Streifen immer, auch außerhalb Ihres Bereichs (andere Piste, andere Bay, GAT/W-Stand). Mit Top-down gilt das auch für die unbesetzten unteren Stationen, die Sie mitmachen (Tower allein: GND, APN und DEL).
 - **Top-down** (Einstellungen → Top-down, `.strips topdown on|off`, Standard an): Unbesetzte untere Stationen macht die nächsthöhere mit und sieht deren Bays. Delivery: DEL → Apron → Ground → Tower. Startup/Pushback: Apron → Ground → Tower. Taxi In: Ground → Tower. Ein Tower allein hat also DELIVERY, STARTUP und TAXI IN mit in seiner Ansicht.
 - **Taxi In bis zum Stand:** Ankünfte am Boden haben ein Kästchen **STD**. Antippen = bis zur Parkposition freigegeben (grüner Haken), synchron mit allen (`.SB_SC_`). Befehl: `.strips stdclr CALLSIGN`.
 - **Heading per Tastenfeld:** Statt der vollen Tastatur ein Ziffernblock (drei Ziffern 001–360, ungültige Ziffern gehen nicht), C | None | OK.
@@ -467,13 +472,13 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 - **Wetter kürzer:** In der Wetterzeile steht kein "WIND" mehr vor dem Wind, das QNH nur noch als **Q1021** (bzw. A2992).
 - **Uhr:** `14:45:12Z` statt `14:45:12 UTC`.
-- **Recover zuverlässig:** Ein zurückgeholter Streifen bleibt jetzt sicher stehen (wie ein von Hand erstellter), bis du ihn wieder entfernst oder der Flieger weiter als 20 NM weg ist. Im ES-Chat steht "CALLSIGN recovered." bzw. warum es nicht ging.
+- **Recover zuverlässig:** Ein zurückgeholter Streifen bleibt jetzt sicher stehen (wie ein von Hand erstellter), bis Sie ihn wieder entfernen oder der Flieger weiter als 20 NM weg ist. Im ES-Chat steht "CALLSIGN recovered." bzw. warum es nicht ging.
 - **Intersection ab Pushback:** INT statt CLR, sobald der Ground State Pushback (oder später) ist, auch wenn der Streifen noch in einer Startup-Spalte liegt.
 - **Streifenrahmen:** Die Farbe der Flugregeln (IFR/VFR/Y/Z) ist kein Balken mehr an der Seite, sondern ein Rahmen oben und unten.
 
 ## Neu in 2.0.35
 
-- **Clearance per Sprechfunk setzt ON FREQ:** Gibst du die Freigabe (CLR-Kästchen, Details), wechselt ein Abflug aus Pending automatisch auf den EuroScope-Status **ONFREQ**. Kommt die Freigabe per CPDLC (DCL, WILCO), bleibt der Status unverändert. Zurücknehmen der Freigabe ändert den Status nicht.
+- **Clearance per Sprechfunk setzt ON FREQ:** Geben Sie die Freigabe (CLR-Kästchen, Details), wechselt ein Abflug aus Pending automatisch auf den EuroScope-Status **ONFREQ**. Kommt die Freigabe per CPDLC (DCL, WILCO), bleibt der Status unverändert. Zurücknehmen der Freigabe ändert den Status nicht.
 - On Freq ist weiterhin der normale EuroScope-Status ONFREQ. Der StripBay-Ersatz aus 2.0.34 springt nur ein, falls EuroScope den Status einmal ablehnt.
 
 ## Neu in 2.0.34
@@ -489,7 +494,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 ## Neu in 2.0.33
 
-- **Parken nur am Gate:** Ein Ankunftsstreifen verschwindet nur noch, wenn der Flieger am Gate angekommen ist (am Boden, < 3 kt, im Standkreis laut GRP-Daten) **und du selbst** auf die **P**-Marke tippst (oder in den Details "Parked" wählst). Vorher gibt es weder die Marke noch den Eintrag. PARK von anderen (Lotse, GRP) entfernt den Streifen bei dir nicht mehr.
+- **Parken nur am Gate:** Ein Ankunftsstreifen verschwindet nur noch, wenn der Flieger am Gate angekommen ist (am Boden, < 3 kt, im Standkreis laut GRP-Daten) **und Sie selbst** auf die **P**-Marke tippen (oder in den Details "Parked" wählst). Vorher gibt es weder die Marke noch den Eintrag. PARK von anderen (Lotse, GRP) entfernt den Streifen bei Ihnen nicht mehr.
 - **STAND antippen** öffnet bei Ankünften immer die Standauswahl (früher parkte ein Tipp auf das ganze Feld).
 - **Stand Auto repariert:** StripBay fragt das Ground Radar Plugin und **wartet bis zu 3 Sekunden**, weil GRP seine Zuweisung oft erst im nächsten Takt verteilt (vorher wurde sofort abgebrochen). Kommt nichts, wählt StripBay selbst einen freien Stand aus `GRpluginStands.txt` und verteilt ihn wie GRP. Im ES-Chat steht jedes Mal, was passiert ist (von GRP, von StripBay oder warum kein Stand). `.strips grpauto off` fragt GRP gar nicht erst (sofort StripBay), `.strips grpauto 2` wieder mit GRP.
 
@@ -505,7 +510,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 ## Neu in 2.0.30: Berlin, Leipzig, Hannover (plug and play)
 
-StripBay erkennt den Platz selbst und stellt sich darauf ein. Gewählt wird nach deinem **Callsign** (EDDV_TWR → Hannover), sonst nach dem **aktiven Platz** im Runway-Dialog. Festlegen lässt es sich im Einstellungsfenster (Zeile **Airport**) oder mit `.strips profile EDDB|EDDP|EDDV|auto`.
+StripBay erkennt den Platz selbst und stellt sich darauf ein. Gewählt wird nach Ihrem **Callsign** (EDDV_TWR → Hannover), sonst nach dem **aktiven Platz** im Runway-Dialog. Festlegen lässt es sich im Einstellungsfenster (Zeile **Airport**) oder mit `.strips profile EDDB|EDDP|EDDV|auto`.
 
 | | Berlin EDDB | Leipzig EDDP | Hannover EDDV |
 |---|---|---|---|
@@ -518,11 +523,11 @@ StripBay erkennt den Platz selbst und stellt sich darauf ein. Gewählt wird nach
 | Delivery → | Apron/Ground nach Stand | Ground 121.805, sonst Tower der Bahn | Ground 121.955, sonst Tower 120.180 |
 | Nach der Landung | Apron, sonst Ground der Bahn | Ground 121.805 | Ground 121.955 |
 
-Alle Frequenzen gelten nur, wenn dort jemand online ist (außer 122.800 als letzter Eintrag in Hannover). Ist niemand da, steht **-**; ist bei Leipzig das SID-Radar offline, entscheidet EuroScope (nächster Sektor). Welche Rolle du hast, ergibt sich aus der Ansicht (Delivery, Ground, Tower), bei "All Bays" aus deinem Callsign.
+Alle Frequenzen gelten nur, wenn dort jemand online ist (außer 122.800 als letzter Eintrag in Hannover). Ist niemand da, steht **-**; ist bei Leipzig das SID-Radar offline, entscheidet EuroScope (nächster Sektor). Welche Rolle Sie haben, ergibt sich aus der Ansicht (Delivery, Ground, Tower), bei "All Bays" aus Ihrem Callsign.
 
 - **Ohne Apron** (Leipzig, Hannover) gibt es keine Apron-Ansicht; Ground zeigt Startup, Pushback, Taxi Out, Departing Tower und Taxi In bis zum Stand. Die Zuständigkeit kennt dort kein APN.
 - **Ein Tower** (Hannover): keine Nord/Süd-Aufteilung, kein Bereich-Dropdown, Tower-Ansicht mit einer Reihe.
-- **Hannover:** Ein **IFR**-Abflug verschwindet, sobald er in der Luft und höher als 1500 ft ist. Kein Tippen auf FREQ nötig, er kommt auch nicht in Recover. **VFR bleibt sichtbar** (Platzrunden, Rundflüge), bis du ihn wegschickst oder er 20 NM weg ist.
+- **Hannover:** Ein **IFR**-Abflug verschwindet, sobald er in der Luft und höher als 1500 ft ist. Kein Tippen auf FREQ nötig, er kommt auch nicht in Recover. **VFR bleibt sichtbar** (Platzrunden, Rundflüge), bis Sie ihn wegschicken oder er 20 NM weg ist.
 - **Leipzig:** ein Ground für beide Bahnen – in der Ground-, Delivery- und Apron-Sicht gibt es keinen Nord/Süd-Bereich, die Zuständigkeit heißt einfach GND. Der Bereich Nord/Combined/Süd gilt nur beim Tower.
 - Ohne Nachbarstation steht im FREQ-Feld wie überall **-**.
 - **Einstellungen je Platz:** Frequenzketten, Hold-Short-Liste, Intersections, Stands ohne Apron und die Pisten-Aufteilung werden je Platz gespeichert (Berlin unter den bisherigen Schlüsseln, sonst mit `_EDDP` bzw. `_EDDV`). Eine Hold-Short-Liste für Hannover ändert also Berlin nicht. Hold-Short- und Intersection-Listen sind für Leipzig und Hannover ab Werk leer (Pisten und freie Eingabe gehen immer); füllen mit `.strips hs …` bzw. `.strips intersections north|south …`.
@@ -535,7 +540,7 @@ Alle Frequenzen gelten nur, wenn dort jemand online ist (außer 122.800 als letz
 - **Stand-Warnung bei Ankünften** (nach den GRP-Daten): Ist der zugewiesene Stand **besetzt** (ein Flieger steht drauf) oder durch einen Nachbarn **gesperrt** (`BLOCKS`), wird das STAND-Feld rot; in den Details steht, wer dort steht bzw. welcher Stand sperrt. Ist eine Ankunft **gelandet und hat noch keinen Stand**, steht dort ein orangefarbenes **?**. Ein Tipp auf das STAND-Feld öffnet die Standauswahl (mit Auto); parken geht nur über die grüne **P**-Marke am Gate.
 - **TSAT abgelaufen:** Ist TSAT + 5 Minuten vorbei und der Flieger noch nicht im Startup (Pending / On Freq), wird das TSAT-Feld rot (nicht in der Tower-Ansicht, dort steht die CTOT).
 - **DCL mit einem Tipp:** Fragt ein Pilot per CPDLC nach der Clearance, blinkt der Rand des CLR-Kästchens orange. Ein Tipp öffnet dann direkt das CPDLC-Fenster mit der fertigen DCL und **Send DCL** (statt einfach das Flag zu setzen). Mit WILCO wird das Kästchen ausgefüllt.
-- **Sync für später Eingeloggte:** Kommt an deinem Platz ein Lotse online, schickt StripBay nach 5 Sekunden einmal die Merker der Flieger, für die du zuständig bist (Zuständigkeit, Hold Short, Übergaben, G/A) – wie "Publish" im GRP. So sieht der Neue sofort den aktuellen Stand. Von Hand: `.strips resync`.
+- **Sync für später Eingeloggte:** Kommt an Ihrem Platz ein Lotse online, schickt StripBay nach 5 Sekunden einmal die Merker der Flieger, für die Sie zuständig sind (Zuständigkeit, Hold Short, Übergaben, G/A) – wie "Publish" im GRP. So sieht der Neue sofort den aktuellen Stand. Von Hand: `.strips resync`.
 
 ## Neu in 2.0.28
 
@@ -555,7 +560,7 @@ Alle Frequenzen gelten nur, wenn dort jemand online ist (außer 122.800 als letz
 ## Neu in 2.0.26
 
 - **Standauswahl gruppiert:**
-  - Oben **Auto (GRP)**: lässt das Ground Radar Plugin einen Stand zuweisen (dieselbe Funktion wie "Auto" im Stand-Menü von GRP). Voraussetzung wie beim Clearance-Flag: StripBay darf auf dem Standard-ES-Radarschirm zeichnen (Plug-ins-Dialog). Antwortet GRP nicht (anderer Schirm, andere GRP-Version), wählt StripBay selbst einen freien Stand aus `GRpluginStands.txt` (nicht besetzt, vergeben oder gesperrt, nicht `MANUAL`, passende Wirbelschleppenkategorie, höchste `PRIORITY`) und verteilt ihn wie GRP mit `GRP/S/<Stand>`. Erneutes Auto gibt einen anderen Stand. Steht in deiner GRP-Version "Auto" unter einer anderen Funktionsnummer: `.strips grpauto <Nummer>` (Standard 2, GRP 1.5).
+  - Oben **Auto (GRP)**: lässt das Ground Radar Plugin einen Stand zuweisen (dieselbe Funktion wie "Auto" im Stand-Menü von GRP). Voraussetzung wie beim Clearance-Flag: StripBay darf auf dem Standard-ES-Radarschirm zeichnen (Plug-ins-Dialog). Antwortet GRP nicht (anderer Schirm, andere GRP-Version), wählt StripBay selbst einen freien Stand aus `GRpluginStands.txt` (nicht besetzt, vergeben oder gesperrt, nicht `MANUAL`, passende Wirbelschleppenkategorie, höchste `PRIORITY`) und verteilt ihn wie GRP mit `GRP/S/<Stand>`. Erneutes Auto gibt einen anderen Stand. Steht in Ihrer GRP-Version "Auto" unter einer anderen Funktionsnummer: `.strips grpauto <Nummer>` (Standard 2, GRP 1.5).
   - Daneben die Direkt-Buttons **Apron 1** und **GAT** (Stands, deren Name mit `APRON1`/`APN1` bzw. `GAT` beginnt; gibt es mehrere, werden sie zur Kategorie).
   - Kategorien: **Apron 2** (Stands, die nur aus einer Zahl bestehen), **A**, **B**, **C**, **D**, **E** (es werden nur die Nummern gezeigt), **W** und **Other** für den Rest.
   - **Lage wie im GRP:** Stands, die gerade **besetzt** (ein Flieger steht im Standkreis), an einen anderen Flieger **vergeben** oder durch `BLOCKS` eines Nachbarn **gesperrt** sind, erscheinen blass mit der Kennung OCC / ASG / BLK. Wählbar bleiben sie trotzdem (wie die manuelle Auswahl im GRP). Händisch im GRP gesperrte Stands (Stands List) kennt StripBay nicht, die gibt GRP nicht weiter.
@@ -568,8 +573,8 @@ Alle Frequenzen gelten nur, wenn dort jemand online ist (außer 122.800 als letz
 
 ## Neu in 2.0.24
 
-- **Zuständigkeit für alle sichtbar (wie bei vSID):** Jeder Streifen trägt eine Marke, wer den Flieger gerade hat: **DEL**, **APN** (Apron), **GND** (Ground), **TWR** (Tower), bei getrennten Pisten mit Seite (**APN N**, **GND S**, **TWR N** …). Deine eigene Stelle ist kräftig gefärbt, fremde Stellen blass. Verteilt wird sie wie bei vSID als kurzes Scratchpad `.SB_RS_<STELLE>` an alle mit StripBay.
-  - **Automatisch:** Wer einen Flieger bearbeitet (Status setzen, verschieben, Freigabe, Landefreigabe), ist zuständig. Deine Stelle ergibt sich aus Station und Bereich oben (z. B. Ground + North = GND N; in "All Bays" wird nichts beansprucht).
+- **Zuständigkeit für alle sichtbar (wie bei vSID):** Jeder Streifen trägt eine Marke, wer den Flieger gerade hat: **DEL**, **APN** (Apron), **GND** (Ground), **TWR** (Tower), bei getrennten Pisten mit Seite (**APN N**, **GND S**, **TWR N** …). Ihre eigene Stelle ist kräftig gefärbt, fremde Stellen blass. Verteilt wird sie wie bei vSID als kurzes Scratchpad `.SB_RS_<STELLE>` an alle mit StripBay.
+  - **Automatisch:** Wer einen Flieger bearbeitet (Status setzen, verschieben, Freigabe, Landefreigabe), ist zuständig. Ihre Stelle ergibt sich aus Station und Bereich oben (z. B. Ground + North = GND N; in "All Bays" wird nichts beansprucht).
   - **Übergaben** setzen gleich die übernehmende Stelle: An Tower → TWR (Seite nach der Piste), An Ground → GND, Ankunft an Ground → GND, an Apron (Taxi in) → APN, auf die Piste / zurück ins Final → TWR.
   - **Von Hand:** Marke auf dem Streifen oder das Feld **RESPONSIBLE** in den Details antippen, Stelle wählen (**NONE** = niemand).
   - Kurz hintereinander geänderte Zustände gehen nicht alle einzeln raus: nach der ersten Nachricht folgt nur noch der letzte Stand.
@@ -587,5 +592,5 @@ Alle Frequenzen gelten nur, wenn dort jemand online ist (außer 122.800 als letz
 - **Delivery gibt Freigaben direkt am Streifen:** Bei Abflügen in Pending/On Frequency (und in der Delivery-Ansicht) steht statt INT das Feld **CLR**. Ein Tipp = Freigabe erteilt (CLEARED, grün), noch ein Tipp nimmt sie zurück. Kein Menü nötig.
 - **CPDLC auf dem Streifen nur als Farbpunkt:** blau = angemeldet / DCL gesendet, orange blinkend = Anfrage (Logon oder DCL), magenta blinkend = neue Nachricht, rot = UNABLE. Antippen öffnet das CPDLC-Fenster.
 - **Ground States hinter einem Button:** Im Änderungsmenü gibt es statt der vielen Status-Tasten einen Button **Ground state: …**. Er öffnet die kurze Liste (Pending, On freq, Startup, Pushback, Taxi out, beim Tower auch Line-up und Takeoff; bei Ankünften Taxi in und Parked).
-- **Hold Short synchron:** Die Verteilung über das Scratchpad läuft jetzt wie bei vSID über eine Warteschlange: jede Nachricht (`.SB_HS_…`, Übergaben, Stand, G/A) bleibt mindestens einen EuroScope-Takt stehen, damit sie sicher ans Netz geht, mehrere laufen nacheinander, erst danach kommt der alte Scratchpad-Inhalt zurück. Das eigene Echo wird ignoriert. Was du in der Zwischenzeit ins Scratchpad schreibst, steht danach drin.
+- **Hold Short synchron:** Die Verteilung über das Scratchpad läuft jetzt wie bei vSID über eine Warteschlange: jede Nachricht (`.SB_HS_…`, Übergaben, Stand, G/A) bleibt mindestens einen EuroScope-Takt stehen, damit sie sicher ans Netz geht, mehrere laufen nacheinander, erst danach kommt der alte Scratchpad-Inhalt zurück. Das eigene Echo wird ignoriert. Was Sie in der Zwischenzeit ins Scratchpad schreiben, steht danach drin.
 

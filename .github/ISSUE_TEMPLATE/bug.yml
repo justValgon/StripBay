@@ -6,7 +6,7 @@ body:
     id: version
     attributes:
       label: StripBay version / Version
-      placeholder: "4.1.1"
+      placeholder: "4.1.2"
     validations:
       required: true
   - type: dropdown
@@ -19,18 +19,18 @@ body:
   - type: dropdown
     id: rolle
     attributes:
-      label: Your position / Deine Station
+      label: Your position / Eigene Station
       options: [DEL, APN, GND, TWR, Several, Other]
   - type: textarea
     id: was
     attributes:
-      label: What happened, what did you expect? / Was ist passiert, was hast du erwartet?
+      label: What happened, what did you expect? / Was ist geschehen, was wurde erwartet?
     validations:
       required: true
   - type: textarea
     id: schritte
     attributes:
-      label: Steps to reproduce / Schritte zum Nachstellen
+      label: Steps to reproduce / Schritte zur Reproduktion
   - type: textarea
     id: extra
     attributes:

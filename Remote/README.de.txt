@@ -3,13 +3,13 @@ StripBay Remote - die Streifen auf einem weiteren Windows-Geraet
 
 (English: README.txt)
 
-Was es ist
+Beschreibung
   Dasselbe Streifenfenster wie in EuroScope, auf einem zweiten Windows-PC,
   Laptop oder Windows-Tablet im selben Netz (WLAN/LAN). Alle Aktionen laufen
   ueber StripBay in EuroScope und sind damit wie gewohnt mit allen anderen
   Lotsen abgeglichen.
 
-Einrichten
+Einrichtung
   1. Am EuroScope-PC: INSTALL.bat ausfuehren (baut auch StripBayRemote.exe
      und legt sie in diesen Ordner).
   2. In EuroScope: .strips remote on
@@ -25,7 +25,7 @@ Einrichten
   EuroScope-PC eine neue IP-Adresse, findet StripBay Remote ihn ueber
   seinen Namen wieder.
 
-Verbindet nicht?
+Verbindung schlägt fehl
   Das Verbinden-Fenster (bzw. die Karte "NOT CONNECTED") nennt den Grund:
   - "... answers, but StripBay Remote is not on there"
       -> in EuroScope: .strips remote on
@@ -36,7 +36,7 @@ Verbindet nicht?
   - "... not in the network of this device"
       -> die Adresse gehoert zu einem anderen Netz (z. B. VPN, Gast-WLAN).
   Selbsttest am EuroScope-PC: StripBayRemote.exe dort starten und als PC
-  "localhost" eingeben. Klappt das, liegt es am Netz oder an der Firewall.
+  "localhost" eingeben. Funktioniert dies, liegt die Ursache im Netzwerk oder in der Firewall.
   Anderer PC oder neuer Code: auf die Karte "NOT CONNECTED" tippen.
 
 Hinweise
