@@ -34,7 +34,7 @@ jobs:
           New-Item -ItemType Directory -Force dist/StripBay, dist/StripBay/Remote | Out-Null
           Get-ChildItem -Recurse bin/Release -Filter StripBay.dll | Select-Object -First 1 | Copy-Item -Destination dist/StripBay/
           Get-ChildItem -Recurse bin/Release -Filter StripBayRemote.exe | Select-Object -First 1 | Copy-Item -Destination dist/StripBay/Remote/
-          Copy-Item README.md dist/StripBay/
+          Copy-Item README.md,README.de.md,LICENSE,AI_DISCLOSURE.md,AI_DISCLOSURE.de.md dist/StripBay/
           Copy-Item docs dist/StripBay/docs -Recurse
           Copy-Item Remote/* dist/StripBay/Remote/ -ErrorAction SilentlyContinue
           Get-ChildItem -Recurse dist | Select-Object FullName, Length

@@ -1,5 +1,10 @@
 # Änderungsverlauf
 
+## Neu in 4.1.3
+
+- **Hinweis zum Einsatz von KI:** `AI_DISCLOSURE.md` (Englisch) und `AI_DISCLOSURE.de.md` (Deutsch) erklären, dass StripBay unter starkem Einsatz von KI entwickelt wurde, und beschreiben Aufgabenteilung, Überprüfung und Einschränkungen. Verweis in beiden READMEs.
+- Keine Funktionsänderung, kein Protokollwechsel.
+
 ## Neu in 4.1.2
 
 - **Sprache:** Die deutschen Texte (README, Handbuch, Änderungsverlauf, Remote- und SDK-Hinweise) verwenden durchgehend die Anrede „Sie“ und eine sachliche Wortwahl.

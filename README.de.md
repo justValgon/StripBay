@@ -4,7 +4,7 @@
 
 Touch-Flugstreifen für **EuroScope**: ein eigenes Fenster mit elektronischen Flugstreifen für Delivery, Apron, Ground und Tower. Fertige Profile sind für Berlin **EDDB** (Nord/Süd getrennt), Leipzig **EDDP** und Hannover **EDDV** vorhanden.
 
-Autoren: Luis Korb, Sören Pflug · aktuelle Version: **4.1.2**
+Autoren: Luis Korb, Sören Pflug · aktuelle Version: **4.1.3**
 
 ![Details mit Verlauf](docs/img/vorschau-details-verlauf.png)
 
@@ -48,6 +48,10 @@ Der Ordner `StripBay/sdk/` enthält `EuroScopePlugIn.h` und `EuroScopePlugInDll.
 ## Fehler melden
 
 Fehler bitte als [Issue](../../issues/new/choose) mit passender Kategorie melden. Hilfreich sind folgende Angaben: Version, Profil (EDDB/EDDP/EDDV), eigene Station (DEL/GND/TWR/APN), Beschreibung des Ablaufs und des Fehlverhaltens sowie ein Screenshot.
+
+## Hinweis zum Einsatz von KI
+
+StripBay wurde unter starkem Einsatz von KI (Claude) entwickelt. Einzelheiten zu Aufgabenteilung, Überprüfung und Einschränkungen: [AI_DISCLOSURE.de.md](AI_DISCLOSURE.de.md).
 
 ## Lizenz
 

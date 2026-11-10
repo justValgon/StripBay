@@ -4,7 +4,7 @@
 
 Touch flight strips for **EuroScope**: a dedicated window with electronic strips for Delivery, Apron, Ground and Tower. Ready-made profiles for Berlin **EDDB** (north/south split), Leipzig **EDDP** and Hannover **EDDV**.
 
-Authors: Luis Korb, Sören Pflug · current version: **4.1.2**
+Authors: Luis Korb, Sören Pflug · current version: **4.1.3**
 
 ![Details with history](docs/img/vorschau-details-verlauf.png)
 
@@ -50,6 +50,10 @@ The user interface and the in-game messages are mostly English; the manual is cu
 ## Reporting bugs
 
 Please open an [issue](../../issues/new/choose) with a suitable label. Helpful details: version, profile (EDDB/EDDP/EDDV), your position (DEL/GND/TWR/APN), what you did and what happened, a screenshot.
+
+## AI disclosure
+
+StripBay was developed with heavy use of AI (Claude). Details, division of work, verification and limitations: [AI_DISCLOSURE.md](AI_DISCLOSURE.md).
 
 ## Licence
 
