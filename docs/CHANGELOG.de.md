@@ -1,5 +1,63 @@
 # Änderungsverlauf
 
+## Neu in 4.2.0
+
+Sieben neue Funktionen. Kein Wechsel der Hauptversion: 4.2 arbeitet mit 4.0 und 4.1 zusammen. Lotsen mit 4.0 oder 4.1 sehen Rollweg und Enteisung nicht; alles andere bleibt synchron. Ein Remote-Gerät mit 4.0 oder 4.1 bleibt verbunden, zeigt die neuen Felder aber erst nach dem Kopieren des neuen Ordners `Remote`.
+
+### Rollweg je Streifen
+
+- **Feld TWY auf dem Streifen** (türkis, zweite Zeile, vor REMARK), z. B. „A B B3“. Antippen ändert den Rollweg. Höchstens 24 Zeichen, nur Buchstaben und Ziffern.
+- **Eingabe beim Pushback:** Das Tastenfeld der Push-Richtung (Feld PB) hat die neue Taste **TWY…**. Die Push-Richtung bleibt dabei erhalten; das Tastenfeld zeigt Richtung und Rollweg zusammen.
+- **Weitere Wege:** Feld **TAXI ROUTE** in den Details, Befehl `.strips taxi CALLSIGN A B B3` (`NONE` entfernt den Rollweg).
+- **Synchron** für alle Lotsen mit StripBay ab 4.2 (`.SB_TX_`); der Rollweg bleibt bei der Übergabe am Streifen und steht im Verlauf.
+- Mit Line-up, Startfreigabe und in der Luft wird der Rollweg nicht mehr gezeigt. Wird das Line-up zurückgenommen, erscheint er wieder.
+
+### Enteisung
+
+- **Feld DEICE auf dem Streifen:** blau **REQ** = Enteisung angefragt, grau **DONE** = enteist. Antippen schaltet weiter (angefragt, erledigt, entfernt).
+- **Setzen:** Taste **DE-ICING** in den Details oder `.strips deice CALLSIGN [req|done|off]`.
+- **Warteschlange:** In der Suche zeigt die Taste **De-icing queue** nur die Flieger, die auf die Enteisung warten (Filter `DEICE`; `DEICED` zeigt die enteisten).
+- Synchron (`.SB_DI_`) und im Verlauf.
+
+### Suche und Filter
+
+- Taste **Search** in der oberen Leiste. Schon beim Tippen zeigen die Spalten nur noch passende Streifen.
+- Gesucht wird nach Rufzeichen bzw. Airline (Teil des Rufzeichens), Typ, Piste, SID (Anfang, ab drei Zeichen), Stand, Start- und Zielplatz. Mehrere Wörter müssen alle passen, z. B. „DLH 24R“.
+- Ein aktiver Filter steht orange auf der Taste; ein Tipp darauf löscht ihn. Befehl: `.strips search TEXT` (ohne Text: alles zeigen).
+- Der Filter gilt nur für das eigene Fenster, in den Spalten und im Zeitstrahl.
+
+### Größe, Anordnung und Farbschema je Station
+
+- StripBay merkt sich Zoom, Anordnung (Auto, Spalten, Raster) und hell/dunkel getrennt für Delivery, Apron, Ground, Tower und „alle“. Beim Wechsel der Station stellt sich das Fenster entsprechend um.
+- Abschaltbar in den Settings (**Layout per station**) oder mit `.strips perstation on|off`.
+
+### Zahlenfeld statt Tastatur
+
+- Felder, die nur Ziffern annehmen (Squawk, Heading, Speed, EOBT), zeigen im Editor nur noch ein Zahlenfeld mit 0 bis 9, Zurück, Clear, Cancel und OK. Buchstaben, Leertaste und Stifteingabe entfallen dort. Die Länge ist begrenzt (Squawk und EOBT vier, Heading und Speed drei Stellen).
+
+### Versionswarnung
+
+- Jede StripBay ab 4.2 meldet ihre Version an die anderen Lotsen (`.SB_VN_`).
+- **Andere Hauptversion** am Platz: Warnung im Chat mit Ton und rote Marke in der oberen Leiste („StripBay 5.0.0 in use“). Meldungen, die es nur bis 3.x gab, lösen die Warnung ebenfalls aus. `.strips version clear` blendet die Marke aus; sie verschwindet auch, wenn kein anderer Lotse mehr am Platz ist.
+- **Gleiche Hauptversion, aber neuer:** einmaliger Hinweis im Chat.
+- 4.0 und 4.1 melden ihre Version noch nicht; sie werden daher nicht angezeigt.
+
+### Update-Hinweis
+
+- Einmal nach dem Start fragt StripBay bei GitHub nach dem neuesten Release (`api.github.com`, Repository `justValgon/StirpBay`). Gibt es eine neuere Version, erscheint ein Hinweis im Chat mit dem Download-Link, und die Settings zeigen „x.y.z available“.
+- Es werden keine Daten über den Lotsen oder die Sitzung übertragen. Abschaltbar in den Settings (**Update check**) oder mit `.strips update off`; `.strips update check` prüft sofort.
+
+### Diagnose für Fehlermeldungen
+
+- `.strips diag` (oder **Write diagnosis file** in den Settings) schreibt `StripBay-diag.txt` neben die `StripBay.dll`: Version, Station, Profil, Fenster, Stellen mit StripBay, Lotsen am Platz, Streifen mit Zuständigkeit, Rollweg und Enteisung, gespeicherte Einstellungen, die letzten 80 Meldungen und bei eingeschaltetem Log die letzten 300 Log-Zeilen.
+- Der Kopplungscode für StripBay Remote und der Hoppie-Logon-Code werden nicht geschrieben; in Meldungen und Log-Zeilen werden sie durch Sterne ersetzt.
+- Die Datei kann an ein Issue angehängt werden. Sie enthält Rufzeichen der Lotsen und Flieger der Sitzung.
+
+### Prüfung
+
+- Unit-Tests für alle neuen Funktionen, ein weiterer Ablauf im Mehr-Lotsen-Test (Rollweg, Enteisung, Versionsmeldung über drei Stellen) und der Zufallstest mit neuen Aktionen und der Bedingung, dass Rollweg und Enteisung bei allen Lotsen gleich sind.
+- Dabei gefunden und behoben: Der Rollweg wurde beim Line-up zunächst bei jedem Lotsen einzeln gelöscht und konnte dadurch auseinanderlaufen. Er wird jetzt nur ausgeblendet.
+
 ## Neu in 4.1.3
 
 - **Hinweis zum Einsatz von KI:** `AI_DISCLOSURE.md` (Englisch) und `AI_DISCLOSURE.de.md` (Deutsch) erklären, dass StripBay unter starkem Einsatz von KI entwickelt wurde, und beschreiben Aufgabenteilung, Überprüfung und Einschränkungen. Verweis in beiden READMEs.

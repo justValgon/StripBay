@@ -716,3 +716,45 @@ void WxClient::Run()
         m_cv.wait_for(lk, std::chrono::seconds(60), [this] { return m_stop.load(); });
     }
 }
+
+// ---------------------------------------------------------------------------
+// Update-Hinweis
+// ---------------------------------------------------------------------------
+UpdateChecker::~UpdateChecker()
+{
+    Stop();
+}
+
+void UpdateChecker::Start(const std::string& repo)
+{
+    if (m_running) return;                      // laeuft noch
+    if (m_thread.joinable()) m_thread.join();   // fertig: aufraeumen
+    m_stop = false;
+    m_done = false;
+    m_running = true;
+    m_thread = std::thread([this, repo]() {
+        std::string body, err, tag;
+        if (HttpGet("https://api.github.com/repos/" + repo + "/releases/latest", body, err, &m_stop)) tag = ParseReleaseTag(body);
+        {
+            std::lock_guard<std::mutex> lk(m_mx);
+            m_tag = tag;
+        }
+        m_done = true;
+        m_running = false;
+    });
+}
+
+void UpdateChecker::Stop()
+{
+    if (!m_thread.joinable()) return;
+    m_stop = true;
+    m_thread.join();
+}
+
+bool UpdateChecker::TryTake(std::string& tag)
+{
+    if (!m_done.exchange(false)) return false;
+    std::lock_guard<std::mutex> lk(m_mx);
+    tag = m_tag;
+    return true;
+}

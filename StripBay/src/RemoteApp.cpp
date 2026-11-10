@@ -237,6 +237,8 @@ void RemoteApp::LoadIni(WindowSettings& ws)
     ws.zoom = gi(L"Window", L"Zoom", 100) / 100.0;
     ws.layout = gi(L"Window", L"Layout", 0);
     ws.light = gi(L"Window", L"Light", 1) != 0;
+    ws.perView = gi(L"Window", L"PerStation", 1) != 0;
+    ws.presets = U(gs(L"Window", L"Presets", L""));
     ws.fullscreen = gi(L"Window", L"Fullscreen", 0) != 0;
     ws.topmost = gi(L"Window", L"Topmost", 0) != 0;
     ws.view = gi(L"Window", L"View", 0);
@@ -263,6 +265,8 @@ void RemoteApp::SaveIni()
         pi(L"Window", L"Zoom", (int)(s.zoom * 100.0 + 0.5));
         pi(L"Window", L"Layout", s.layout);
         pi(L"Window", L"Light", s.light ? 1 : 0);
+        pi(L"Window", L"PerStation", s.perView ? 1 : 0);
+        ps(L"Window", L"Presets", W(s.presets));
         pi(L"Window", L"Fullscreen", s.fullscreen ? 1 : 0);
         pi(L"Window", L"Topmost", s.topmost ? 1 : 0);
         pi(L"Window", L"View", s.view);
@@ -686,6 +690,14 @@ bool RemoteApp::LocalCommand(const std::string& line)
     else if (sub == "hell" || sub == "light") m_win.SetLight(true);
     else if (sub == "dunkel" || sub == "dark") m_win.SetLight(false);
     else if (sub == "theme") m_win.SetLight(arg == "hell" || arg == "light");
+    else if (sub == "perstation" || sub == "perview") m_win.SetPerView(arg == "on" || arg == "an");
+    else if (sub == "search" || sub == "filter" || sub == "find")
+    {
+        std::string f;
+        for (size_t i = 2; i < t.size(); ++i) f += (f.empty() ? "" : " ") + t[i];
+        m_win.SetFilter(f);
+        return true;
+    }
     else if (sub == "layout")
     {
         int l = arg == "auto" ? 0 : (arg == "spalten" || arg == "cols" || arg == "columns") ? 1 : (arg == "raster" || arg == "grid") ? 2 : -1;

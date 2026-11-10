@@ -166,6 +166,43 @@ static bool ParseSbWord(const std::string& sp, const char* key, std::string& v)
     return true;
 }
 
+// Wie ParseSbWord, aber mit "-" als Trenner (Rollweg: ".SB_TX_A-B-B3")
+static bool ParseSbText(const std::string& sp, const char* key, std::string& v)
+{
+    size_t p = sp.find(key);
+    if (p == std::string::npos) return false;
+    v.clear();
+    for (char c : sp.substr(p + strlen(key)))
+    {
+        if (!isalnum((unsigned char)c) && c != '-') break;
+        v += (char)toupper((unsigned char)c);
+    }
+    return true;
+}
+
+// Rollweg vereinheitlichen: Grossbuchstaben und Ziffern, Teile mit einem Leerzeichen getrennt, hoechstens 24 Zeichen
+static std::string NormTaxi(const std::string& text)
+{
+    std::string out, tok;
+    for (char c : text + " ")
+    {
+        if (isalnum((unsigned char)c)) { tok += (char)toupper((unsigned char)c); continue; }
+        if (tok.empty()) continue;
+        if (out.size() + tok.size() + (out.empty() ? 0 : 1) > 24) break;
+        out += (out.empty() ? "" : " ") + tok;
+        tok.clear();
+    }
+    return out;
+}
+
+// eigene Version fuer ".SB_VN_": "4.2.0" -> "4X2X0"
+static std::string VersionWire()
+{
+    std::string v = STRIPBAY_VERSION;
+    for (char& c : v) if (c == '.') c = 'X';
+    return v;
+}
+
 // "HHMMSS" (UTC) -> Zeitpunkt nahe bei now, sonst 0
 static long long PlanFromHhmmss(const std::string& v, long long now)
 {
@@ -461,6 +498,7 @@ StripBayPlugin::~StripBayPlugin()
     g_plugin = nullptr;
     m_vacdm.Stop();
     m_wx.Stop();
+    m_upd.Stop();
     m_hoppie.Stop();
     m_icaoLoader.Stop();
     m_hub.log = nullptr;       // beim Entladen nichts mehr melden
@@ -516,6 +554,13 @@ void StripBayPlugin::FlushLog()
 void StripBayPlugin::Msg(const std::string& utf8)
 {
     Log("MSG " + utf8);
+    {
+        time_t tt = time(nullptr);
+        char ts[16];
+        snprintf(ts, sizeof(ts), "%02d:%02d:%02dZ ", (int)(tt % 86400 / 3600), (int)(tt % 3600 / 60), (int)(tt % 60));
+        m_recentMsgs.push_back(ts + utf8);
+        while (m_recentMsgs.size() > 80) m_recentMsgs.pop_front();
+    }
     std::string text = Utf8ToAcp(utf8);
     DisplayUserMessage(STRIPBAY_NAME, STRIPBAY_NAME, text.c_str(), true, true, false, false, false);
     m_hub.Note(utf8);   // auch auf dem Remote-Geraet zeigen
@@ -532,6 +577,7 @@ void StripBayPlugin::OnTimer(int Counter)
     ProcessAutoSquawks();
     if (m_tick % 5 == 0) ScanControllers();
     Announce();
+    ProcessUpdate();
     if (m_tick % 10 == 1) SyncGrpStands();
     // hoechstens einmal je Minute (Lotsen, die kurz weg und wieder da sind, loesen sonst
     // staendig neue Scratchpad-Runden aus)
@@ -620,7 +666,7 @@ void StripBayPlugin::OnFlightPlanControllerAssignedDataUpdate(CFlightPlan Flight
         // ueberschreibt es den neuen Stand bei allen. Eine neue Zustaendigkeit erledigt auch ein wartendes Angebot.
         // (Nicht fuer Meldungen, die je Lotse verschieden sind: Stelle an/ab, Bitte um Resync.)
         if (sp.size() > 7 && sp.compare(0, 4, ".SB_") == 0 && sp.compare(0, 7, ".SB_UN_") != 0 && sp.compare(0, 7, ".SB_UX_") != 0 &&
-            sp.compare(0, 7, ".SB_SQ_") != 0)
+            sp.compare(0, 7, ".SB_SQ_") != 0 && sp.compare(0, 7, ".SB_VN_") != 0)
         {
             auto q = m_sync.find(cs);
             if (q != m_sync.end())
@@ -719,6 +765,21 @@ void StripBayPlugin::OnFlightPlanControllerAssignedDataUpdate(CFlightPlan Flight
             if (xv == "N" || xv == "E" || xv == "S" || xv == "W") m_pushDir[cs] = xv;
             else m_pushDir.erase(cs);
         }
+        // Rollweg (Teile mit "-" getrennt) und Enteisung
+        if (ParseSbText(sp, ".SB_TX_", xv))
+        {
+            std::string rt = xv == "NONE" ? std::string() : NormTaxi(xv);
+            if (rt.empty()) m_taxi.erase(cs);
+            else m_taxi[cs] = rt;
+        }
+        if (ParseSbWord(sp, ".SB_DI_", xv))
+        {
+            int k = atoi(xv.c_str());
+            if (k == 1 || k == 2) m_deice[cs] = k; else m_deice.erase(cs);
+        }
+        // Version einer anderen StripBay; Meldungen, die es nur bis 3.x gab
+        if (ParseSbWord(sp, ".SB_VN_", xv)) VersionSeen(xv);
+        if (sp.find(".SB_RQ_") != std::string::npos || sp.find(".SB_AK_") != std::string::npos) VersionSeen("3");
         // Angebot abgelehnt (von Stelle xv): beim Anbietenden 30 s rot
         if (ParseSbWord(sp, ".SB_HX_", xv))
         {
@@ -838,6 +899,8 @@ void StripBayPlugin::ForgetFlight(const std::string& cs)
     m_hov.erase(cs);
     m_int.erase(cs);
     m_hs.erase(cs);
+    m_taxi.erase(cs);
+    m_deice.erase(cs);
     m_ga.erase(cs);
     m_dl.erase(cs);
     m_xfer.erase(cs);
@@ -1115,7 +1178,7 @@ static const char* const kGlobalKeys[] = {
     "Airports", "ArrivalRange", "AutoVacate", "Cdm", "CdmUrl", "ColWidths", "DlAuto", "DlOn", "DlSound", "DlStation",
     "GrpAutoFn", "IcaoDir", "Layout", "NextButton", "NextFreqArr", "NextFreqDep", "OfferBlink", "OfferRemind", "Remote", "RemotePort", "Profile", "Range2", "Responsibility",
     "RunwayDropState", "RunwayFilter", "RunwaySplitOn", "SqkFnTopSky", "Theme", "Timeline", "TimelineEstimate", "TimelineNight", "TimelineRange", "TimelineTheme", "TopDown", "TransitionAltitude",
-    "TsatSort", "View", "Wx", "Zoom", "Sound_request", "Sound_wilco", "Sound_unable", "Sound_offer" };
+    "TsatSort", "UpdateCheck", "View", "ViewPresets", "Wx", "Zoom", "Sound_request", "Sound_wilco", "Sound_unable", "Sound_offer" };
 static const char* const kProfileKeys[] = {
     "FreqArr1v2", "FreqArr2v2", "FreqChainArr0", "FreqDelv3", "FreqDep0v3", "FreqDep1v3", "FreqDep2v3", "FreqSid",
     "FreqStand2", "FreqTwr0", "FreqTwr1", "FreqTwr2", "GndStands", "HoldShortList2", "IntNorth", "IntSouth", "RunwaySplit" };
@@ -2748,6 +2811,8 @@ void StripBayPlugin::HistSync(const std::string& cs, const std::string& msg, boo
     else if (kind == ".SB_LU_") t = on ? "Line-up" : "Line-up cancelled";
     else if (kind == ".SB_GA_") t = on ? "Go around" : "Go around cleared";
     else if (kind == ".SB_PB_") t = on ? "Push direction " + v : std::string("Push direction removed");
+    else if (kind == ".SB_TX_") { std::string r = v; for (char& c : r) if (c == '-') c = ' '; t = on ? "Taxi route " + r : std::string("Taxi route removed"); }
+    else if (kind == ".SB_DI_") t = v == "1" ? "De-icing requested" : v == "2" ? "De-icing done" : "De-icing removed";
     else if (kind == ".SB_TP_") t = on ? "Sequence time " + v.substr(0, 4) : std::string("Sequence time reset");
     else if (kind == ".SB_AP_") t = v == "RWY" ? "Arrival on runway" : v == "REL" ? "Arrival released to ground" : "Arrival back on final";
     else if (kind == ".SB_SC_") t = on ? "Standard clearance marked" : "Standard clearance unmarked";
@@ -2758,6 +2823,185 @@ void StripBayPlugin::HistSync(const std::string& cs, const std::string& msg, boo
     else if (kind == ".VSID_HOV_") t = on ? "Sent to next frequency" : "Sent to next frequency undone";
     else return;   // Stelle an/ab, Resync-Bitte, Stand, Unbekanntes: kein Eintrag
     Hist(cs, kind, v, t, by);
+}
+
+// Rollweg setzen (leer = loeschen), geteilt ueber ".SB_TX_A-B-B3"
+void StripBayPlugin::SetTaxi(const std::string& cs, const std::string& text)
+{
+    auto it = m_entries.find(cs);
+    if (it == m_entries.end() || it->second.freeStrip) return;
+    std::string rt = NormTaxi(text);
+    if (rt.empty()) m_taxi.erase(cs);
+    else m_taxi[cs] = rt;
+    std::string w = rt;
+    for (char& c : w) if (c == ' ') c = '-';
+    SendScratch(cs, ".SB_TX_" + (w.empty() ? std::string("NONE") : w));
+    PushBoard();
+}
+
+// Enteisung: 0 keine, 1 angefragt, 2 erledigt
+void StripBayPlugin::SetDeice(const std::string& cs, int state)
+{
+    auto it = m_entries.find(cs);
+    if (it == m_entries.end() || it->second.freeStrip) return;
+    if (state == 1 || state == 2) m_deice[cs] = state;
+    else { m_deice.erase(cs); state = 0; }
+    SendScratch(cs, ".SB_DI_" + std::to_string(state));
+    PushBoard();
+}
+
+// Resync: Rollweg und Enteisung eines Fliegers noch einmal schicken
+bool StripBayPlugin::ResyncExtras(const std::string& cs)
+{
+    bool any = false;
+    auto tx = m_taxi.find(cs);
+    if (tx != m_taxi.end())
+    {
+        std::string w = tx->second;
+        for (char& c : w) if (c == ' ') c = '-';
+        SendScratch(cs, ".SB_TX_" + w);
+        any = true;
+    }
+    auto di = m_deice.find(cs);
+    if (di != m_deice.end()) { SendScratch(cs, ".SB_DI_" + std::to_string(di->second)); any = true; }
+    return any;
+}
+
+// Version einer anderen StripBay am Platz ("4X2X0", "3" = eine 3.x). Andere Hauptversion: Warnung im Chat
+// und im Fenster (Uebergaben und Abgleich passen nicht zusammen). Gleiche Hauptversion, aber neuer: Hinweis.
+void StripBayPlugin::VersionSeen(const std::string& wire)
+{
+    std::string v;
+    for (char c : wire) v += (c == 'X' || c == 'x') ? '.' : c;
+    if (v.empty() || !isdigit((unsigned char)v[0])) return;
+    const std::string mine = STRIPBAY_VERSION;
+    const int theirMajor = atoi(v.c_str()), myMajor = atoi(mine.c_str());
+    const std::string shown = v.find('.') == std::string::npos ? v + ".x" : v;
+    if (theirMajor != myMajor)
+    {
+        m_verWarn = "StripBay " + shown + " in use";
+        if (m_verTold.insert(v).second)
+        {
+            Msg("WARNING: another controller uses StripBay " + shown + ", you use " + mine +
+                ". Handovers and sync only work with the same major version (first number) - please use the same version.");
+            PlayEventSound("unable");
+        }
+        PushBoard();
+    }
+    else if (CompareVersions(v, mine) > 0 && m_verTold.insert(v).second)
+        Msg("Another controller uses the newer StripBay " + shown + " (you: " + mine + "). Both work together; new functions need the update.");
+}
+
+// Update-Hinweis: einmal nach dem Start bei GitHub nach der neuesten Version sehen
+void StripBayPlugin::ProcessUpdate()
+{
+    if (m_updCheck && !m_updStarted && m_tick >= 8)
+    {
+        m_updStarted = true;
+        m_upd.Start(STRIPBAY_REPO);
+    }
+    std::string tag;
+    if (!m_upd.TryTake(tag)) return;
+    const bool asked = m_updAsked;
+    m_updAsked = false;
+    if (tag.empty() || CompareVersions(tag, STRIPBAY_VERSION) <= 0)
+    {
+        // nur auf ausdrueckliche Nachfrage (.strips update check) melden
+        if (asked) Msg(tag.empty() ? "Update check: github.com not reachable." : "You have the latest version (" STRIPBAY_VERSION ").");
+        return;
+    }
+    m_updAvail = tag;
+    Msg("Update available: StripBay " + tag + " (you have " STRIPBAY_VERSION "). Download: https://github.com/" STRIPBAY_REPO
+        "/releases/latest   (switch off: .strips update off)");
+    PushBoard();
+}
+
+// Diagnose fuer Fehlermeldungen: Version, Einstellungen, Stellen, Streifen und die letzten Meldungen in
+// StripBay-diag.txt neben der StripBay.dll. Kein Logon-Code, kein Remote-Code.
+bool StripBayPlugin::WriteDiag(std::wstring& fileOut)
+{
+    std::string o = "StripBay diagnosis\r\n==================\r\n";
+    time_t tt = time(nullptr);
+    char ts[40];
+    snprintf(ts, sizeof(ts), "%02d:%02d:%02dZ", (int)(tt % 86400 / 3600), (int)(tt % 3600 / 60), (int)(tt % 60));
+    o += std::string("Version:        ") + STRIPBAY_VERSION + "\r\n";
+    o += std::string("Time (UTC):     ") + ts + "\r\n";
+    CController me = ControllerMyself();
+    o += "My callsign:    " + (me.IsValid() ? S(me.GetCallsign()) : std::string("-")) + "\r\n";
+    o += "My station:     " + (MyUnit().empty() ? std::string("-") : MyUnit()) + "\r\n";
+    o += "Profile:        " + m_profileIcao + (m_profileForced.empty() ? " (auto)" : " (fixed)") + "\r\n";
+    {
+        std::string a, b;
+        for (const std::string& x : m_airports) a += x + " ";
+        for (const std::string& x : m_arrAirports) b += x + " ";
+        o += "Airports dep:   " + a + "\r\nAirports arr:   " + b + "\r\n";
+    }
+    WindowSettings ws = m_window.GetSettings();
+    o += "Window:         view " + std::to_string(ws.view) + ", area " + std::to_string(ws.rwyFilter) + ", zoom " +
+         std::to_string((int)(ws.zoom * 100 + 0.5)) + " %, layout " + std::to_string(ws.layout) + (ws.light ? ", light" : ", dark") +
+         (ws.fullscreen ? ", fullscreen" : "") + "\r\n";
+    o += std::string("Responsibility: ") + (m_respOn ? "on" : "off") + "\r\n";
+    o += std::string("Remote:         ") + (m_net.Running() ? "on" : "off") + "\r\n";
+    o += "Version note:   " + (m_verWarn.empty() ? std::string("-") : m_verWarn) + "\r\n";
+    o += "Update:         " + (m_updAvail.empty() ? std::string(m_updCheck ? "none found" : "check off") : m_updAvail + " available") + "\r\n";
+    o += "\r\nStations with StripBay (announced)\r\n";
+    for (const auto& kv : m_sbUnits) o += "  " + kv.first + "\r\n";
+    if (m_sbUnits.empty()) o += "  -\r\n";
+    o += "\r\nControllers at my airports\r\n";
+    for (const std::string& c : m_knownCtrls) o += "  " + c + "\r\n";
+    if (m_knownCtrls.empty()) o += "  -\r\n";
+    o += "\r\nStrips (callsign, A/D, bay, responsible / effective, offer, taxi route, de-icing)\r\n";
+    for (const auto& kv : m_entries)
+    {
+        const std::string& cs = kv.first;
+        auto r = m_resp.find(cs);
+        auto of = m_offer.find(cs);
+        auto tx = m_taxi.find(cs);
+        auto di = m_deice.find(cs);
+        o += "  " + cs + (kv.second.freeStrip ? "  note" : kv.second.arrival ? "  A" : "  D") + "  bay " + std::to_string(kv.second.bay) +
+             "  resp " + (r == m_resp.end() ? std::string("-") : r->second) + " / " + (EffResp(cs).empty() ? std::string("-") : EffResp(cs)) +
+             "  offer " + (of == m_offer.end() ? std::string("-") : of->second) +
+             "  taxi " + (tx == m_taxi.end() ? std::string("-") : tx->second) +
+             "  deice " + (di == m_deice.end() ? std::string("-") : std::to_string(di->second)) + "\r\n";
+    }
+    if (m_entries.empty()) o += "  -\r\n";
+    o += "\r\nSettings (as saved with EuroScope)\r\n";
+    {
+        auto add = [&](const std::string& k) {
+            const char* v = GetDataFromSettings(k.c_str());
+            if (v && *v) o += "  " + k + "=" + v + "\r\n";
+        };
+        for (const char* k : kGlobalKeys) add(k);
+        for (const char* k : kProfileKeys) add(m_profileIcao == "EDDB" || m_profileIcao.empty() ? std::string(k) : std::string(k) + "_" + m_profileIcao);
+    }
+    // Codes gehoeren nicht in eine Datei, die an eine Fehlermeldung gehaengt wird: den Kopplungscode fuer
+    // StripBay Remote und den Hoppie-Logon-Code ueberall durch Sterne ersetzen, ebenso jede Zahl nach "code".
+    auto redact = [&](std::string l) {
+        for (const std::string* secret : { &m_remoteCode, &m_dlLogon })
+            if (secret->size() >= 4)
+                for (size_t q = l.find(*secret); q != std::string::npos; q = l.find(*secret, q + 6)) l.replace(q, secret->size(), "******");
+        std::string low = Lower(l);
+        for (size_t q = low.find("code"); q != std::string::npos; q = low.find("code", q + 4))
+        {
+            size_t d = q + 4;
+            while (d < l.size() && (l[d] == ' ' || l[d] == ':' || l[d] == '=')) ++d;
+            while (d < l.size() && isalnum((unsigned char)l[d])) { if (isdigit((unsigned char)l[d])) l[d] = '*'; ++d; }
+        }
+        return l;
+    };
+    o += "\r\nLast messages\r\n";
+    for (const std::string& m : m_recentMsgs) o += "  " + redact(m) + "\r\n";
+    if (m_recentMsgs.empty()) o += "  -\r\n";
+    if (m_logOn)
+    {
+        o += "\r\nLog (last 300 lines)\r\n";
+        size_t from = m_log.size() > 300 ? m_log.size() - 300 : 0;
+        for (size_t i = from; i < m_log.size(); ++i) o += "  " + redact(m_log[i]) + "\r\n";
+    }
+    else o += "\r\nLog: off (switch on with .strips log on, reproduce the problem, then run .strips diag again)\r\n";
+    std::wstring dir = PluginDir();
+    fileOut = (dir.empty() ? std::wstring() : dir + L"\\") + L"StripBay-diag.txt";
+    return WriteTextFileW(fileOut, o);
 }
 
 void StripBayPlugin::SendScratch(const std::string& cs, const std::string& text)
@@ -3069,6 +3313,20 @@ void StripBayPlugin::PushBoard()
     b.opt.offerBlink = m_offerBlink;
     b.opt.offerRemind = m_offerRemind;
     b.opt.respOn = m_respOn;
+    // Rollweg: mit Line-up bzw. Startfreigabe und in der Luft erledigt. Er wird dann nur nicht mehr gezeigt
+    // (ohne Nachricht und ohne ihn zu loeschen - so bleibt der Stand bei allen Lotsen gleich).
+    for (const auto& kv : m_taxi)
+    {
+        auto e = m_entries.find(kv.first);
+        if (e == m_entries.end()) continue;
+        const StripData& d = e->second.data;
+        if (!d.arrival && (d.state == GC_LINEUP || d.state == GC_DEPA || d.airborne)) continue;
+        b.opt.taxi[kv.first] = kv.second;
+    }
+    for (const auto& kv : m_deice) if (m_entries.count(kv.first)) b.opt.deice[kv.first] = kv.second;
+    b.opt.updAvail = m_updAvail;
+    b.opt.verWarn = m_verWarn;
+    b.opt.updCheck = m_updCheck;
     if (!m_undo.empty())
     {
         static const char* kw[] = { "", "move", "resp", "handover", "remove" };
@@ -3752,6 +4010,7 @@ void StripBayPlugin::ScanControllers()
         for (const std::string& c : now) if (!m_knownCtrls.count(c)) fresh = true;
     m_knownCtrls.swap(now);
     m_ctrlScanned = true;
+    if (m_knownCtrls.empty() && !m_verWarn.empty()) { m_verWarn.clear(); m_verTold.clear(); }   // allein am Platz
     if (fresh) { m_resyncAt = m_tick + 5; m_announceAgain = true; }
     // gemeldete StripBay-Stellen, deren Lotse nicht mehr da ist, vergessen
     for (auto it = m_sbUnits.begin(); it != m_sbUnits.end();)
@@ -3798,6 +4057,7 @@ int StripBayPlugin::Resync()
             if (m_stdClr.count(cs)) { SendScratch(cs, ".SB_SC_TRUE"); any = true; }
             auto pd = m_pushDir.find(cs);
             if (pd != m_pushDir.end()) { SendScratch(cs, ".SB_PB_" + pd->second); any = true; }
+            if (ResyncExtras(cs)) any = true;
             if (m_onFreq.count(cs) && r != m_resp.end()) { SendScratch(cs, ".SB_OF_TRUE"); any = true; }   // sonst schon oben
             if (any) ++n;
             continue;
@@ -3819,6 +4079,7 @@ int StripBayPlugin::Resync()
         if (of != m_offer.end() && m_offerByMe.count(cs)) SendScratch(cs, ".SB_HO_" + of->second);
         auto pd = m_pushDir.find(cs);
         if (pd != m_pushDir.end()) SendScratch(cs, ".SB_PB_" + pd->second);
+        ResyncExtras(cs);
         auto tp = m_tlPlan.find(cs);
         if (tp != m_tlPlan.end()) SendScratch(cs, ".SB_TP_" + Hhmmss(tp->second));
         auto dv = m_divert.find(cs);
@@ -3870,7 +4131,7 @@ bool StripBayPlugin::UnitHasSb(const std::string& unit) const
 void StripBayPlugin::Announce()
 {
     std::string want = m_respOn ? MyUnit() : std::string();
-    if (want == m_announced && !m_announceAgain) return;
+    if (want == m_announced && !m_announceAgain && m_verSent) return;
     if (m_tick < 3) return;
     CController me = ControllerMyself();
     if (!me.IsValid() || !me.IsController()) return;
@@ -3882,6 +4143,8 @@ void StripBayPlugin::Announce()
         if (!f.IsValid() || (!f.GetTrackingControllerIsMe() && !Trim(S(f.GetTrackingControllerCallsign())).empty())) continue;
         if (!m_announced.empty() && m_announced != want) SendScratch(kv.first, ".SB_UX_" + m_announced);
         if (!want.empty()) SendScratch(kv.first, ".SB_UN_" + want);
+        SendScratch(kv.first, ".SB_VN_" + VersionWire());   // eigene Version (andere Hauptversion = Warnung bei allen)
+        m_verSent = true;
         m_announced = want;
         m_announceAgain = false;
         return;
@@ -5482,6 +5745,11 @@ void StripBayPlugin::SetField(const std::string& cs, int field, const std::strin
         SetHoldShort(cs, valueIn);
         return;
     }
+    if (field == F_TAXI)
+    {
+        if (!it->second.freeStrip) SetTaxi(cs, valueIn);
+        return;
+    }
     if (it->second.freeStrip) return;
     CFlightPlan fp = FlightPlanSelect(cs.c_str());
     if (!fp.IsValid()) return;
@@ -5927,6 +6195,11 @@ void StripBayPlugin::LoadSettings(WindowSettings& ws)
     }
     if (const char* v = GetDataFromSettings("Theme"))
         ws.light = Lower(Trim(S(v))) == "hell";
+    if (const char* v = GetDataFromSettings("ViewPresets"))
+    {
+        std::string p = Trim(S(v));
+        if (p.size() >= 2 && p[1] == ':') { ws.perView = p[0] != '0'; ws.presets = p.substr(2); }
+    }
     if (const char* v = GetDataFromSettings("RunwayFilter"))
     {
         int f = atoi(v);
@@ -5990,6 +6263,8 @@ void StripBayPlugin::LoadSettings(WindowSettings& ws)
     }
     if (const char* v = GetDataFromSettings("Responsibility"))
         if (*v) m_respOn = atoi(v) != 0;
+    if (const char* v = GetDataFromSettings("UpdateCheck"))
+        if (*v) m_updCheck = atoi(v) != 0;
     {
         // 2.0.85: Blinken erst nach 30 s, Ton spaeter (Standard 60 s). Alter Standard (30 s, ohne OfferBlink) -> 60 s.
         const char* vb = GetDataFromSettings("OfferBlink");
@@ -6058,6 +6333,8 @@ void StripBayPlugin::SaveWindowSettings()
     snprintf(buf, sizeof(buf), "%d", ws.view);
     SaveDataToSettings("View", "StripBay Ansicht (0 alle, 1 Delivery, 2 Ground, 3 Tower, 4 Apron)", buf);
     SaveDataToSettings("Theme", "StripBay Farbschema (hell/dunkel)", ws.light ? "hell" : "dunkel");
+    SaveDataToSettings("ViewPresets", "StripBay Groesse/Anordnung/Farbschema je Station",
+                       ((ws.perView ? "1:" : "0:") + ws.presets).c_str());
     snprintf(buf, sizeof(buf), "%d", ws.rwyFilter);
     SaveDataToSettings("RunwayFilter", "StripBay Pistenanzeige (0 beide, 1 erste, 2 zweite Gruppe)", buf);
 }
@@ -6240,6 +6517,24 @@ bool StripBayPlugin::OnCompileCommand(const char* sCommandLine)
         m_window.SetLight(light);
         SaveWindowSettings();
         Msg(light ? "Light theme (DFS style)." : "Dark theme.");
+    }
+    else if (sub == "perstation" || sub == "perview")
+    {
+        // perstation on|off: Groesse, Anordnung und Farbschema je Station merken
+        std::string a = Lower(arg);
+        if (a != "on" && a != "off" && a != "an" && a != "aus") { Msg("Usage: .strips perstation on|off"); return true; }
+        m_window.SetPerView(a == "on" || a == "an");
+        SaveWindowSettings();
+        Msg(m_window.PerView() ? "Layout per station on: size, layout and theme are remembered for each station."
+                               : "Layout per station off: one size, layout and theme for all stations.");
+    }
+    else if (sub == "search" || sub == "filter" || sub == "find")
+    {
+        // search TEXT: nur passende Streifen zeigen (ohne Text: Filter aus)
+        std::string f;
+        for (size_t i = 2; i < t.size(); ++i) f += (f.empty() ? "" : " ") + t[i];
+        m_window.SetFilter(f);
+        return true;
     }
     else if (sub == "layout")
     {
@@ -6932,6 +7227,50 @@ bool StripBayPlugin::OnCompileCommand(const char* sCommandLine)
         if (Lower(arg) == "reset") Msg("Column widths reset.");
         PushBoard();
     }
+    else if (sub == "taxi" || sub == "taxiroute" || sub == "twy")
+    {
+        // taxi CALLSIGN A B B3 | NONE: Rollweg auf dem Streifen, synchron
+        std::string c = Upper(arg);
+        if (c.empty() || !m_entries.count(c) || m_entries[c].freeStrip) { Msg("Usage: .strips taxi CALLSIGN A B B3   (NONE = remove)"); return true; }
+        std::string rt;
+        for (size_t i = 3; i < t.size(); ++i) rt += (rt.empty() ? "" : " ") + t[i];
+        SetTaxi(c, Upper(rt) == "NONE" ? std::string() : rt);
+    }
+    else if (sub == "deice" || sub == "deicing" || sub == "de-ice")
+    {
+        // deice CALLSIGN [req|done|off]: Enteisung; ohne Angabe weiterschalten (keine -> angefragt -> erledigt -> keine)
+        std::string c = Upper(arg), v = t.size() > 3 ? Lower(t[3]) : std::string();
+        if (c.empty() || !m_entries.count(c) || m_entries[c].freeStrip) { Msg("Usage: .strips deice CALLSIGN [req|done|off]"); return true; }
+        int cur = m_deice.count(c) ? m_deice[c] : 0;
+        int st = v == "req" || v == "on" || v == "1" ? 1 : v == "done" || v == "2" ? 2 : v == "off" || v == "none" || v == "0" ? 0 : (cur + 1) % 3;
+        SetDeice(c, st);
+    }
+    else if (sub == "diag" || sub == "diagnose" || sub == "diagnosis")
+    {
+        std::wstring file;
+        if (WriteDiag(file)) Msg("Diagnosis written: StripBay-diag.txt next to StripBay.dll. Attach it to your bug report (github.com/" STRIPBAY_REPO "/issues).");
+        else Msg("StripBay-diag.txt could not be written (folder of StripBay.dll not writable?).");
+        return true;
+    }
+    else if (sub == "update")
+    {
+        // update on|off|check: beim Start nach einer neueren Version auf GitHub sehen
+        std::string v = Lower(arg);
+        if (v == "on" || v == "an") m_updCheck = true;
+        else if (v == "off" || v == "aus") { m_updCheck = false; m_updAvail.clear(); }
+        else if (v == "check" || v.empty()) { m_upd.Start(STRIPBAY_REPO); m_updStarted = true; m_updAsked = true; Msg("Looking for a newer version ..."); return true; }
+        else { Msg("Usage: .strips update on|off|check"); return true; }
+        SaveDataToSettings("UpdateCheck", "StripBay Update-Hinweis (1 an, 0 aus)", m_updCheck ? "1" : "0");
+        Msg(m_updCheck ? "Update check on (once after start, asks github.com for the latest release)." : "Update check off.");
+        PushBoard();
+    }
+    else if (sub == "version")
+    {
+        if (Lower(arg) == "clear") { m_verWarn.clear(); m_verTold.clear(); PushBoard(); }
+        Msg(std::string("StripBay ") + STRIPBAY_VERSION + (m_verWarn.empty() ? "" : ". Note: " + m_verWarn) +
+            (m_updAvail.empty() ? "" : ". Update available: " + m_updAvail));
+        return true;
+    }
     else if (sub == "pushdir" || sub == "pb")
     {
         // pushdir CALLSIGN N|E|S|W|NONE: Push-Richtung (Nase), synchron
@@ -7311,6 +7650,10 @@ bool StripBayPlugin::OnCompileCommand(const char* sCommandLine)
         Msg("  offerblink SEC / offerremind SEC  handover to me: blinks after SEC (30), sound later (60, 0 = off)");
         Msg("  responsibility on|off  off = nobody is entered as responsible (no handovers), strips follow the ground state");
         Msg("  give CS [UNIT] | accept CS | reject CS | take CS | offer CS CANCEL   handover: offer to the next station, accept, reject, take over, take back");
+        Msg("  taxi CS A B B3 | NONE     taxi route on the strip (also via the PB field: TWY...)   deice CS [req|done|off]   de-icing mark");
+        Msg("  search TEXT               show only matching strips (callsign, type, runway, SID, stand, airport, DEICE); no text = all");
+        Msg("  perstation on|off         remember size, layout and theme for each station");
+        Msg("  update on|off|check       look for a newer version on GitHub   version   own version and notes   diag   write StripBay-diag.txt for bug reports");
         Msg("  remote on|off|status|code new|port N  StripBay Remote: use the strips on another Windows PC in your network");
         Msg("  stand [CALLSIGN]                 where the stand comes from (diagnostics)");
         Msg("  icao [folder | auto]             ICAO data (callsigns, airport names)");

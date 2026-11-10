@@ -4,7 +4,7 @@
 
 Touch flight strips for **EuroScope**: a dedicated window with electronic strips for Delivery, Apron, Ground and Tower. Ready-made profiles for Berlin **EDDB** (north/south split), Leipzig **EDDP** and Hannover **EDDV**.
 
-Authors: Luis Korb, Sören Pflug · current version: **4.1.3**
+Authors: Luis Korb, Sören Pflug · current version: **4.2.0**
 
 ![Details with history](docs/img/vorschau-details-verlauf.png)
 
@@ -15,6 +15,9 @@ Authors: Luis Korb, Sören Pflug · current version: **4.1.3**
 - **Mixed operation:** if an occupied station does not use StripBay, the chain does not get stuck. For example Delivery and Tower with StripBay, Ground without.
 - **Timeline after the DFS design** for Tower: the whole label is one button, menu on long press, day and night colours.
 - **History per strip:** responsibility, clearances, ground state and handover with time stamps.
+- **Taxi route and de-icing per strip:** fields TWY and DEICE, in sync between controllers; the taxi route can be entered together with the pushback.
+- **Search and filter**, layout per station, numeric keypad for numeric fields.
+- **Version warning, update notice and a diagnosis file** (`.strips diag`) for bug reports.
 - **Runway bay**, hold short, take-off and landing clearance, next frequency, METAR and ATIS.
 - **In sync between controllers** via the scratchpad, no server needed.
 - **StripBay Remote:** the strip screen on a second Windows device, e.g. a touchscreen.
@@ -49,7 +52,7 @@ The user interface and the in-game messages are mostly English; the manual is cu
 
 ## Reporting bugs
 
-Please open an [issue](../../issues/new/choose) with a suitable label. Helpful details: version, profile (EDDB/EDDP/EDDV), your position (DEL/GND/TWR/APN), what you did and what happened, a screenshot.
+Please open an [issue](../../issues/new/choose) with a suitable label. Helpful details: the file `StripBay-diag.txt` (written by `.strips diag`), version, profile (EDDB/EDDP/EDDV), your position (DEL/GND/TWR/APN), what you did and what happened, a screenshot.
 
 ## AI disclosure
 

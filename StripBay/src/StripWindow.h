@@ -29,6 +29,10 @@ struct WindowSettings
     int view = 0;     // 0 = alle Bays, 1 = Delivery, 2 = Ground, 3 = Tower
     int rwyFilter = 0;// getrennte Pisten: 0 = beide, RWY_A, RWY_B
     bool light = true;  // helles Farbschema (DFS-Stil), ab 2.0.21 Standard
+    // ab 4.2.0: Groesse, Anordnung und Farbschema je Station merken ("zoom,layout,light" je Ansicht, mit "/" getrennt;
+    // nicht gesetzte Werte -1) - beim Wechsel der Station stellt sich das Fenster darauf ein
+    bool perView = true;
+    std::string presets;
 };
 
 // Farben des Zeitstrahls: DFS-Schema (Tag / Nacht, dunkelgrauer bzw. fast schwarzer Grund) oder wie das Fenster
@@ -66,6 +70,10 @@ public:
     void SetRwyFilter(int filter);
     void SetLight(bool light);
     bool IsLight() const { return m_light; }
+    void SetPerView(bool on) { m_perView = on; Invalidate(); }
+    bool PerView() const { return m_perView; }
+    void SetFilter(const std::string& text);            // Suche / Filter (leer = alles zeigen)
+    const std::string& Filter() const { return m_filter; }
     int  GetRwyFilter() const { return m_rwyFilter; }
     WindowSettings GetSettings() const;
 
@@ -190,6 +198,9 @@ private:
         A_TL_SEQ,            // Zeitstrahl-Menue: Zeit fuer die Reihenfolge (Tastenfeld)
         A_RWYST_BASE,        // + Spalte: Piste gelb / rot / frei schalten (Kopf der Runway-Bay)
         A_RWYST_END = A_RWYST_BASE + 31,
+        A_SEARCH,            // Suche / Filter (obere Leiste): Editor oeffnen bzw. Filter loeschen
+        A_DEICE,             // Enteisung weiterschalten (Details)
+        A_EDIT_FDEICE,       // Such-Editor: nur Flieger, die auf die Enteisung warten
         A_RESTORE_BASE = 500,// + Index im Papierkorb: zurueckholen
         A_FIELD_BASE = 600,  // + Field: Feld im Detailmenue bearbeiten
         A_PICK_BASE = 700,   // + Index auf der Seite: Wert aus der Liste
@@ -359,6 +370,19 @@ private:
     std::vector<std::pair<RECT, std::string>> m_intCells;  // INT-Felder (Antippen = Intersection-Editor)
     std::vector<std::pair<RECT, std::string>> m_hovCells;  // FREQ-Felder in der Luft (Antippen = weggeschickt)
     std::vector<std::pair<RECT, std::string>> m_hsCells;   // Hold-Short-Marken (Antippen = Editor)
+    std::vector<std::pair<RECT, std::string>> m_taxiCells; // Rollweg-Marken (Antippen = Editor)
+    std::vector<std::pair<RECT, std::string>> m_deiceCells;// Enteisungs-Marken (Antippen = weiterschalten)
+    // Suche / Filter: nur Streifen, die zu allen Woertern passen (Callsign, Typ, Piste, SID, Stand, Platz, DEICE)
+    std::string m_filter, m_filterPrev;
+    bool FilterMatch(const StripData& s) const;
+    void OpenSearch();
+    bool EditNumeric() const;                               // Editor nimmt nur Ziffern: Zahlenfeld statt Tastatur
+    // Groesse, Anordnung, Farbschema je Station
+    struct ViewPreset { int zoomPct = -1, layout = -1, light = -1; };
+    ViewPreset m_presets[VIEW_COUNT];
+    bool m_perView = true;
+    void StorePreset(int view);
+    void ApplyPreset(int view);
     std::vector<std::pair<RECT, std::string>> m_rwyCells;  // RWY-Felder (Antippen = Hold-Short-Auswahl)
     std::vector<std::pair<RECT, std::string>> m_goneCells;  // FREQ uebergebener Streifen (Antippen = entfernen)
     std::vector<std::pair<RECT, std::string>> m_sqkCells;    // SQK-Felder (Antippen = Squawk-Tastenfeld mit Auto)
@@ -426,7 +450,7 @@ private:
     bool        m_dlOpen = false;    // CPDLC-Fenster offen
     std::string m_dlCs;
     RECT        m_dlCard{};
-    int         m_editMode = 0;      // 0 = Scratchpad, 1 = Intersection, 2 = Hold Short, 3 = neuer Streifen, 4 = Feld, 5 = CPDLC-Freitext
+    int         m_editMode = 0;      // 0 = Scratchpad, 1 = Intersection, 2 = Hold Short, 3 = neuer Streifen, 4 = Feld, 5 = CPDLC-Freitext, 6 = Einstellung, 7 = Suche
     bool        m_editNote = false;  // neuer Streifen als Notiz
     bool        m_editDesig = false; // neuer Streifen als Designator-Strip
     int         RwyStateOf(int col) const;   // Runway-Bay: 0 frei, 1 Caution, 2 Closed (gesperrt)

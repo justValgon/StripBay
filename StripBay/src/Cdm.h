@@ -47,6 +47,58 @@ std::string FormatIsoUtc(long long utc);
 // wird die TSAT zurueckgesetzt, damit vACDM neu rechnet)
 std::string VacdmTobtJson(const std::string& callsign, long long tobtUtc, long long tsatUtc);
 
+// Update-Hinweis: fragt einmal im Hintergrund die neueste Version bei GitHub ab
+//  https://api.github.com/repos/<owner>/<repo>/releases/latest -> "tag_name": "v4.2.0"
+class UpdateChecker
+{
+public:
+    ~UpdateChecker();
+    void Start(const std::string& repo);
+    void Stop();
+    // true genau einmal, sobald die Abfrage fertig ist; tag leer = nicht erreichbar
+    bool TryTake(std::string& tag);
+
+private:
+    std::thread       m_thread;
+    std::atomic<bool> m_stop{ false };
+    std::atomic<bool> m_done{ false };
+    std::atomic<bool> m_running{ false };
+    std::mutex        m_mx;
+    std::string       m_tag;
+};
+// "tag_name" aus der GitHub-Antwort (ohne fuehrendes v), leer = nicht gefunden
+inline std::string ParseReleaseTag(const std::string& body)
+{
+    size_t p = body.find("\"tag_name\"");
+    if (p == std::string::npos) return std::string();
+    p = body.find(':', p);
+    if (p == std::string::npos) return std::string();
+    p = body.find('"', p);
+    if (p == std::string::npos) return std::string();
+    size_t e = body.find('"', p + 1);
+    if (e == std::string::npos) return std::string();
+    std::string t = body.substr(p + 1, e - p - 1);
+    if (!t.empty() && (t[0] == 'v' || t[0] == 'V')) t.erase(0, 1);
+    if (t.empty() || t.size() > 20) return std::string();
+    for (char c : t) if (!((c >= '0' && c <= '9') || c == '.')) return std::string();
+    return t;
+}
+// Versionen "4.2.0" vergleichen: <0, 0, >0 (fehlende Teile = 0)
+inline int CompareVersions(const std::string& a, const std::string& b)
+{
+    size_t i = 0, j = 0;
+    for (int part = 0; part < 4; ++part)
+    {
+        long x = 0, y = 0;
+        while (i < a.size() && a[i] >= '0' && a[i] <= '9') x = x * 10 + (a[i++] - '0');
+        while (j < b.size() && b[j] >= '0' && b[j] <= '9') y = y * 10 + (b[j++] - '0');
+        if (x != y) return x < y ? -1 : 1;
+        if (i < a.size()) ++i;
+        if (j < b.size()) ++j;
+    }
+    return 0;
+}
+
 // METAR und ATIS-Buchstaben im Hintergrund:
 //  METAR:  https://metar.vatsim.net/<ICAO> (EuroScope liefert ihn zusaetzlich selbst)
 //  ATIS:   https://data.vatsim.net/v3/vatsim-data.json, Feld "atis" -> atis_code

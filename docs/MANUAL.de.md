@@ -222,6 +222,15 @@ Für Apron-Lotsen (Vorfeld): **STARTUP → PUSHBACK → TAXI → TO GROUND**, da
 - In der **Ground-Ansicht** stehen übergebene Flieger oben in Taxi Out, im **Tower** in Taxi / Holding.
 - Wie bei "An Tower": Ist Ground ein anderer Lotse, sieht er die Übergabe nicht, nur den Status TAXI.
 
+## Rollweg, Enteisung, Suche (ab 4.2.0)
+
+- **Rollweg (TWY):** Eingabe über die Taste **TWY…** im Tastenfeld der Push-Richtung, das Feld **TAXI ROUTE** in den Details oder `.strips taxi CS A B B3`. Der Rollweg steht als türkises Feld TWY in der zweiten Zeile des Streifens, ist für alle Lotsen mit StripBay ab 4.2 gleich und bleibt bei der Übergabe erhalten. Antippen des Feldes ändert ihn. Ab Line-up wird er nicht mehr gezeigt.
+- **Enteisung (DEICE):** Taste **DE-ICING** in den Details oder `.strips deice CS`. Blau REQ = angefragt, grau DONE = enteist. Antippen des Feldes schaltet weiter.
+- **Suche:** Taste **Search** in der oberen Leiste. Gefiltert wird nach Rufzeichen bzw. Airline, Typ, Piste, SID, Stand und Flugplatz; mehrere Wörter müssen alle passen. **De-icing queue** zeigt die Flieger, die auf die Enteisung warten. Ein Tipp auf die orange Taste löscht den Filter.
+- **Je Station:** Zoom, Anordnung und Farbschema werden für jede Station getrennt gemerkt (Settings: **Layout per station**).
+- **Zahlenfeld:** Squawk, Heading, Speed und EOBT werden über ein reines Zahlenfeld eingegeben.
+- **Versionen:** Eine andere Hauptversion bei einem Lotsen am Platz wird im Chat und mit einer roten Marke gemeldet. `.strips update check` sucht nach einer neueren Version, `.strips diag` schreibt die Diagnose-Datei für Fehlermeldungen.
+
 ## Hold Short
 
 Ein Hold Short wird auf dem Streifen als **rote Marke** "HS V1" oben rechts angezeigt, dazu eine rote Linie über den ganzen Streifen.
@@ -469,6 +478,13 @@ Ab 2.0.20 einheitlich englisch: **`.strips <command> [value]`**, Schalter immer 
 | `.strips resync` | Merker Ihrer Flieger noch einmal an alle schicken |
 | `.strips give CS [STELLE]` / `accept CS` / `reject CS` / `take CS` / `offer CS CANCEL` | Übergabe: anbieten, annehmen, ablehnen, übernehmen, zurücknehmen |
 | `.strips responsibility on` / `off` | Zuständigkeit und Übergaben an/aus |
+| `.strips taxi CS A B B3` / `taxi CS NONE` | Rollweg auf dem Streifen setzen bzw. entfernen (ab 4.2.0) |
+| `.strips deice CS [req\|done\|off]` | Enteisung: angefragt, erledigt, entfernt; ohne Angabe weiterschalten (ab 4.2.0) |
+| `.strips search TEXT` | Nur passende Streifen zeigen; ohne Text alles zeigen (ab 4.2.0) |
+| `.strips perstation on` / `off` | Größe, Anordnung und Farbschema je Station merken (ab 4.2.0) |
+| `.strips update on` / `off` / `check` | Update-Hinweis über GitHub (ab 4.2.0) |
+| `.strips version` / `version clear` | Eigene Version und Hinweise; Versionswarnung ausblenden (ab 4.2.0) |
+| `.strips diag` | Diagnose-Datei `StripBay-diag.txt` für Fehlermeldungen schreiben (ab 4.2.0) |
 | `.strips timeline on` / `off` / `range 3 6` / `night on\|off` / `estimate on\|off` | Tower-Zeitstrahl |
 | `.strips intersections north\|south LISTE` / `reset` | Intersections je Piste im INT-Tastenfeld |
 | `.strips weather on` / `off` | METAR/ATIS von VATSIM |

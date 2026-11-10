@@ -258,6 +258,25 @@ private:
     std::map<std::string, bool> m_ga;                  // Durchstarten, geteilt ueber ".SB_GA_TRUE/FALSE"
     std::map<std::string, std::set<std::string>> m_actRwy[2];   // [0] Abflug, [1] Ankunft: aktive Pisten je Platz
     std::map<std::string, std::string> m_hs;          // Hold Short, geteilt ueber ".SB_HS_..." im Scratchpad
+    // --- ab 4.2.0 ---
+    std::map<std::string, std::string> m_taxi;        // Rollweg ("A B B3"), geteilt ueber ".SB_TX_A-B-B3"
+    std::map<std::string, int>         m_deice;       // Enteisung: 1 angefragt, 2 erledigt, geteilt ueber ".SB_DI_1"
+    void SetTaxi(const std::string& cs, const std::string& text);
+    bool ResyncExtras(const std::string& cs);
+    void SetDeice(const std::string& cs, int state);
+    // Versionen: jede StripBay meldet ihre Version (".SB_VN_4X2X0"); andere Hauptversion = Warnung
+    bool        m_verSent = false;
+    std::string m_verWarn;                   // Text fuer das Fenster (leer = alles gleich)
+    std::set<std::string> m_verTold;         // schon gemeldete Versionen
+    void VersionSeen(const std::string& wire);
+    // Update-Hinweis (GitHub-Releases), einmal nach dem Start
+    UpdateChecker m_upd;
+    bool        m_updCheck = true, m_updStarted = false, m_updAsked = false;
+    std::string m_updAvail;
+    void ProcessUpdate();
+    // Diagnose (.strips diag): letzte Meldungen und Zustand in eine Textdatei
+    std::deque<std::string> m_recentMsgs;
+    bool WriteDiag(std::wstring& fileOut);
 
     GroundCmd m_runwayCmd = GC_LINEUP;   // Status, wenn ein Abflug auf die Runway gezogen wird
     std::string m_freqDep = "{APT}_*DEP,{APT}_*APP";   // Ersatz, wenn EuroScope keinen naechsten Lotsen kennt

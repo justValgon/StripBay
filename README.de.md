@@ -4,7 +4,7 @@
 
 Touch-Flugstreifen für **EuroScope**: ein eigenes Fenster mit elektronischen Flugstreifen für Delivery, Apron, Ground und Tower. Fertige Profile sind für Berlin **EDDB** (Nord/Süd getrennt), Leipzig **EDDP** und Hannover **EDDV** vorhanden.
 
-Autoren: Luis Korb, Sören Pflug · aktuelle Version: **4.1.3**
+Autoren: Luis Korb, Sören Pflug · aktuelle Version: **4.2.0**
 
 ![Details mit Verlauf](docs/img/vorschau-details-verlauf.png)
 
@@ -15,6 +15,9 @@ Autoren: Luis Korb, Sören Pflug · aktuelle Version: **4.1.3**
 - **Gemischter Betrieb:** Setzt eine besetzte Stelle StripBay nicht ein, wird die Übergabekette dadurch nicht unterbrochen, beispielsweise bei Delivery und Tower mit StripBay und Ground ohne StripBay.
 - **Zeitstrahl nach DFS-Vorbild** für den Tower: Das gesamte Label ist eine Schaltfläche, das Menü öffnet sich durch langes Drücken; Tag- und Nachtdarstellung.
 - **Verlauf je Streifen:** Zuständigkeit, Freigaben, Ground State und Übergaben mit Uhrzeit.
+- **Rollweg und Enteisung je Streifen:** Felder TWY und DEICE, zwischen den Lotsen abgeglichen; der Rollweg kann zusammen mit dem Pushback eingegeben werden.
+- **Suche und Filter**, Größe und Anordnung je Station, Zahlenfeld für reine Zahlenfelder.
+- **Versionswarnung, Update-Hinweis und Diagnose-Datei** (`.strips diag`) für Fehlermeldungen.
 - **Runway-Bay**, Hold Short, Start- und Landefreigabe, nächste Frequenz, METAR und ATIS.
 - **Abgleich zwischen den Lotsen** über das Scratchpad, ohne zusätzlichen Server.
 - **StripBay Remote:** Darstellung der Streifen auf einem zweiten Windows-Gerät, beispielsweise einem Touchscreen.
@@ -47,7 +50,7 @@ Der Ordner `StripBay/sdk/` enthält `EuroScopePlugIn.h` und `EuroScopePlugInDll.
 
 ## Fehler melden
 
-Fehler bitte als [Issue](../../issues/new/choose) mit passender Kategorie melden. Hilfreich sind folgende Angaben: Version, Profil (EDDB/EDDP/EDDV), eigene Station (DEL/GND/TWR/APN), Beschreibung des Ablaufs und des Fehlverhaltens sowie ein Screenshot.
+Fehler bitte als [Issue](../../issues/new/choose) mit passender Kategorie melden. Hilfreich sind folgende Angaben: die Datei `StripBay-diag.txt` (erzeugt mit `.strips diag`), Version, Profil (EDDB/EDDP/EDDV), eigene Station (DEL/GND/TWR/APN), Beschreibung des Ablaufs und des Fehlverhaltens sowie ein Screenshot.
 
 ## Hinweis zum Einsatz von KI
 

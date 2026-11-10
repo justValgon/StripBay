@@ -7,7 +7,9 @@
 //   PATCH  - nur Fehlerbehebungen
 #pragma once
 
-#define STRIPBAY_VERSION   "4.1.3"
+#define STRIPBAY_VERSION   "4.2.0"
+// GitHub-Repository (Update-Hinweis, Fehlermeldungen)
+#define STRIPBAY_REPO      "justValgon/StirpBay"
 #define STRIPBAY_WIDEN2(x) L##x
 #define STRIPBAY_WIDEN(x)  STRIPBAY_WIDEN2(x)
 #define STRIPBAY_VERSION_W STRIPBAY_WIDEN(STRIPBAY_VERSION)

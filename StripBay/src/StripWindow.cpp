@@ -730,6 +730,28 @@ bool StripWindow::Create(const WindowSettings& settings)
     m_rwyFilter = (settings.rwyFilter == RWY_A || settings.rwyFilter == RWY_B) ? settings.rwyFilter : 0;
     m_light = settings.light;
     SetTheme(m_light);
+    m_perView = settings.perView;
+    {
+        // "zoom,layout,light/..." je Ansicht
+        int v = 0;
+        size_t a = 0;
+        const std::string& ps = settings.presets;
+        while (a <= ps.size() && v < VIEW_COUNT && !ps.empty())
+        {
+            size_t e = ps.find('/', a);
+            std::string part = ps.substr(a, e == std::string::npos ? std::string::npos : e - a);
+            int z = -1, l = -1, li = -1;
+            if (sscanf(part.c_str(), "%d,%d,%d", &z, &l, &li) == 3)
+            {
+                m_presets[v].zoomPct = (z >= 60 && z <= 250) ? z : -1;
+                m_presets[v].layout = (l >= 0 && l <= 2) ? l : -1;
+                m_presets[v].light = (li == 0 || li == 1) ? li : -1;
+            }
+            ++v;
+            if (e == std::string::npos) break;
+            a = e + 1;
+        }
+    }
     m_topmost = settings.topmost;
     m_normalRect = settings.normalRect;
 
@@ -892,9 +914,71 @@ void StripWindow::SetLayout(int layout)
     Invalidate();
 }
 
+// Groesse, Anordnung und Farbschema der Station merken bzw. einstellen
+void StripWindow::StorePreset(int view)
+{
+    if (view < 0 || view >= VIEW_COUNT) return;
+    m_presets[view].zoomPct = (int)(m_zoom * 100.0 + 0.5);
+    m_presets[view].layout = m_layout;
+    m_presets[view].light = m_light ? 1 : 0;
+}
+
+void StripWindow::ApplyPreset(int view)
+{
+    if (view < 0 || view >= VIEW_COUNT) return;
+    const ViewPreset& p = m_presets[view];
+    if (p.zoomPct >= 60 && p.zoomPct <= 250 && p.zoomPct != (int)(m_zoom * 100.0 + 0.5)) { m_zoom = p.zoomPct / 100.0; UpdateScale(); }
+    if (p.layout >= 0 && p.layout <= 2) m_layout = p.layout;
+    if (p.light == 0 || p.light == 1) { m_light = p.light == 1; SetTheme(m_light); }
+}
+
+// Suche / Filter: Grossbuchstaben, einzelne Leerzeichen
+void StripWindow::SetFilter(const std::string& text)
+{
+    std::string f;
+    for (char c : text)
+    {
+        if (c == ' ') { if (!f.empty() && f.back() != ' ') f += ' '; }
+        else if (isalnum((unsigned char)c)) f += (char)toupper((unsigned char)c);
+    }
+    while (!f.empty() && f.back() == ' ') f.pop_back();
+    if (f == m_filter) return;
+    m_filter = f;
+    for (int& v : m_scroll) v = 0;
+    RebuildColumns();
+    Invalidate();
+}
+
+// Passt der Streifen zu allen Woertern des Filters? Ein Wort passt, wenn es im Callsign vorkommt (Airline,
+// Flugnummer) oder Typ, Piste, Stand, Start- bzw. Zielplatz genau trifft, die SID damit beginnt, oder
+// DEICE (wartet auf die Enteisung) bzw. DEICED (enteist) lautet.
+bool StripWindow::FilterMatch(const StripData& s) const
+{
+    if (m_filter.empty()) return true;
+    auto up = [](const std::string& v) { std::string o; for (char c : v) if (isalnum((unsigned char)c)) o += (char)toupper((unsigned char)c); return o; };
+    const std::string cs = up(s.callsign), ty = up(s.acType), r1 = up(s.rwy), r2 = up(s.arrRwy), sid = up(s.sid), st = up(s.stand),
+                      ad = up(s.ades), ap = up(s.adep);
+    const int di = DeiceOf(m_board, s.callsign);
+    size_t a = 0;
+    while (a < m_filter.size())
+    {
+        size_t e = m_filter.find(' ', a);
+        std::string t = m_filter.substr(a, e == std::string::npos ? std::string::npos : e - a);
+        a = e == std::string::npos ? m_filter.size() : e + 1;
+        if (t.empty()) continue;
+        bool hit = cs.find(t) != std::string::npos || t == ty || t == r1 || t == r2 || t == st || t == ad || t == ap ||
+                   (t.size() >= 3 && sid.compare(0, t.size(), t) == 0) || (t == "DEICE" && di == 1) || (t == "DEICED" && di == 2);
+        if (!hit) return false;
+    }
+    return true;
+}
+
 void StripWindow::SetView(int view)
 {
-    m_view = (view >= 0 && view < VIEW_COUNT) ? view : VIEW_ALL;
+    const int old = m_view;
+    const int nv = (view >= 0 && view < VIEW_COUNT) ? view : VIEW_ALL;
+    if (m_perView && nv != old) { StorePreset(old); m_view = nv; ApplyPreset(nv); }
+    m_view = nv;
     if (m_view == VIEW_DEL) m_rwyFilter = 0;   // Delivery gibt es nur einmal: immer beide Seiten
     for (int& v : m_scroll) v = 0;
     if (m_mode != M_NONE) PointerCancel();
@@ -1042,6 +1126,7 @@ void StripWindow::RebuildColumns()
                     if ((def.kind == 1 && sd.arrival) || (def.kind == 2 && !sd.arrival)) continue;
                     if (def.kind == 3 && (sd.arrival ? b != BAY_TAXIIN : (b == BAY_TAXIIN || sd.airborne))) continue;
                     if (HiddenByResp(sd, b)) continue;
+                    if (!m_filter.empty() && !FilterMatch(sd)) continue;
                     if (def.rwyMatch && !RwyColMatch(def.rwyMatch, sd, c == FirstRwyDef(v))) continue;
                     // Ground-Stand-Spalte: andere Stands nur als graue Vorschau im Startup
                     if ((def.gs == 1 && !sd.gndStand && !(m_view == VIEW_GND && b == BAY_STARTUP && Preview(sd, b))) ||
@@ -1435,6 +1520,7 @@ void StripWindow::KeypadKey(int action)
         m_kpKind = KP_NONE;
         if (kind == KP_HS) OpenHsEditor(cs);
         else if (kind == KP_INT) OpenIntEditor(cs);
+        else if (kind == KP_PB) { m_pickCs = cs; OpenFieldEditor(F_TAXI); }
     }
     else if (action == A_KP_OK)
     {
@@ -1561,7 +1647,13 @@ void StripWindow::DrawKeypad(HDC hdc, int width, int height)
             dv += L"\x00B0";
         }
     }
-    else if (m_kpKind == KP_PB) dv = s->pushDir.empty() ? std::wstring(L"-") : L"NOSE " + W(s->pushDir);
+    else if (m_kpKind == KP_PB)
+    {
+        // Richtung, dahinter der Rollweg (kurz, das Feld ist schmal)
+        const std::string tx = TaxiOf(m_board, s->callsign);
+        if (tx.empty()) dv = s->pushDir.empty() ? std::wstring(L"-") : L"NOSE " + W(s->pushDir);
+        else dv = (s->pushDir.empty() ? std::wstring(L"-") : W(s->pushDir)) + L"  " + W(tx);
+    }
     else if (m_kpKind == KP_TOBT) dv = L"TSAT " + (s->tsat.empty() ? std::wstring(L"-") : W(s->tsat));
     else if (m_kpKind == KP_TLSEQ)
     {
@@ -1637,6 +1729,7 @@ void StripWindow::DrawKeypad(HDC hdc, int width, int height)
         if (!m_kpGroup.empty()) bb.push_back({ L"\x2190", A_KP_BACK });
         if (m_kpKind == KP_INT) bb.push_back({ L"Able for", A_KP_ABLE });
         if (m_kpKind != KP_HL && m_kpKind != KP_PB && m_kpKind != KP_TOBT && m_kpKind != KP_TLSEQ) bb.push_back({ L"Text", A_KP_FREE });
+        if (m_kpKind == KP_PB) bb.push_back({ L"TWY\x2026", A_KP_FREE });   // beim Push gleich den Rollweg angeben
         if (m_kpKind != KP_TOBT) bb.push_back({ L"None", A_KP_NONE });
         bb.push_back({ L"C", A_KP_CANCEL });
         int k = (int)bb.size();
@@ -1682,6 +1775,8 @@ void StripWindow::DrawSettings(HDC hdc, int width, int height)
     rows.push_back({ L"Size", { { L"\x2212", ".strips zoom " + std::to_string(std::max(60, zoomPct - 10)), false },
                                 { std::to_wstring(zoomPct) + L" %", "", false },
                                 { L"+", ".strips zoom " + std::to_string(std::min(250, zoomPct + 10)), false } } });
+    // Groesse, Anordnung und Farbschema je Station merken (beim Wechsel der Station stellt sich das Fenster um)
+    rows.push_back({ L"Layout per station", { { L"On", ".strips perstation on", m_perView }, { L"Off", ".strips perstation off", !m_perView } } });
     rows.push_back({ L"Strip window", { { L"On top", std::string(".strips ontop ") + (m_topmost ? "off" : "on"), m_topmost },
                                   { L"Fullscreen", std::string(".strips fullscreen ") + (m_fullscreen ? "off" : "on"), m_fullscreen } } });
     // StripBay Remote: auf einem weiteren Windows-Geraet im Netz
@@ -1740,6 +1835,14 @@ void StripWindow::DrawSettings(HDC hdc, int width, int height)
     rows.push_back({ L"Timeline colours", { { L"Day", ".strips timeline night off", !o.tlNight },
                                             { L"Night", ".strips timeline night on", o.tlNight } } });
 
+    if (!m_remoteClient)
+    {
+        // Update-Hinweis (GitHub-Releases) und Diagnose-Datei fuer Fehlermeldungen
+        std::vector<Opt> v = onoff(".strips update", o.updCheck);
+        v.push_back({ o.updAvail.empty() ? std::wstring(L"Check now") : W(o.updAvail) + L" available", ".strips update check", false });
+        rows.push_back({ L"Update check", v });
+        rows.push_back({ L"Bug report", { { L"Write diagnosis file", ".strips diag", false } } });
+    }
     int pad = Sx(18), gap = Sx(6), rowH = Sx(50), titleH = Sx(48), btnH = Sx(50);
     int n = (int)rows.size();
     int perCol = std::max(4, (height - Sx(40) - 2 * pad - titleH - btnH - Sx(12)) / (rowH + gap));
@@ -1937,6 +2040,15 @@ WindowSettings StripWindow::GetSettings() const
     s.fullscreen = m_fullscreen;
     s.topmost = m_topmost;
     s.zoom = m_zoom;
+    s.perView = m_perView;
+    for (int v = 0; v < VIEW_COUNT; ++v)
+    {
+        ViewPreset p = m_presets[v];
+        if (v == m_view && m_perView) { p.zoomPct = (int)(m_zoom * 100.0 + 0.5); p.layout = m_layout; p.light = m_light ? 1 : 0; }
+        char buf[48];
+        snprintf(buf, sizeof(buf), "%s%d,%d,%d", v ? "/" : "", p.zoomPct, p.layout, p.light);
+        s.presets += buf;
+    }
     s.visible = IsVisible();
     s.normalRect = m_normalRect;
     if (m_hwnd && !m_fullscreen)
@@ -2301,7 +2413,7 @@ int StripWindow::HitButton(POINT p) const
 
 bool StripWindow::IsEditAction(int action)
 {
-    return (action >= A_EDIT_OK && action <= A_INK_RECO) || action == A_EDIT_CASE || action == A_EDIT_PASTE || action == A_EDIT_REQ ||
+    return (action >= A_EDIT_OK && action <= A_INK_RECO) || action == A_EDIT_CASE || action == A_EDIT_FDEICE || action == A_EDIT_PASTE || action == A_EDIT_REQ ||
            (action >= A_RT_LEFT && action <= A_RT_RESET) || (action >= A_RT_TOK_BASE && action < A_RT_TOK_BASE + 400) ||
            (action >= A_KEY_BASE && action < A_KEY_BASE + 256);
 }
@@ -2807,6 +2919,24 @@ void StripWindow::PointerUp(POINT p)
             OpenDatalink(cs);
             break;
         }
+        bool onTaxi = false, onDeice = false;
+        for (const auto& tc3 : m_taxiCells)
+            if (tc3.second == cs && PtInRect(&tc3.first, m_downPt)) onTaxi = true;
+        for (const auto& dc3 : m_deiceCells)
+            if (dc3.second == cs && PtInRect(&dc3.first, m_downPt)) onDeice = true;
+        if (onTaxi)
+        {
+            if (m_host) m_host->StripTapped(cs);
+            m_pickCs = cs;
+            OpenFieldEditor(F_TAXI);
+            break;
+        }
+        if (onDeice)
+        {
+            if (m_host) { m_host->StripTapped(cs); m_host->Command(".strips deice " + cs); }
+            Invalidate();
+            break;
+        }
         bool onHs = false;
         for (const auto& hc : m_hsCells)
             if (hc.second == cs && PtInRect(&hc.first, m_downPt)) onHs = true;
@@ -3122,6 +3252,13 @@ void StripWindow::ExecuteActionInner(int action)
         return;
     }
     case A_HS_OPEN:     if (!m_detailCs.empty()) OpenKeypad(KP_HS, m_detailCs, m_downPt); return;
+    case A_DEICE:       if (!m_detailCs.empty() && m_host) m_host->Command(".strips deice " + m_detailCs); Invalidate(); return;
+    case A_SEARCH:
+        // aktiver Filter: ein Tipp loescht ihn; sonst Suche oeffnen
+        if (!m_filter.empty()) SetFilter(std::string());
+        else OpenSearch();
+        return;
+    case A_EDIT_FDEICE: m_editText = "DEICE"; CloseEditor(true); return;
     case A_EDIT_RWY:
     {
         // Hold Short vor der Piste des Fliegers
@@ -3132,7 +3269,7 @@ void StripWindow::ExecuteActionInner(int action)
     }
     case A_EDIT_OK:     CloseEditor(true); return;
     case A_EDIT_CANCEL: CloseEditor(false); return;
-    case A_EDIT_CLEAR:  m_editText.clear(); Invalidate(); return;
+    case A_EDIT_CLEAR:  m_editText.clear(); if (m_editMode == 7) SetFilter(std::string()); Invalidate(); return;
     case A_EDIT_INK:
         m_inkMode = !m_inkMode;
         m_inkStrokes.clear();
@@ -3668,6 +3805,8 @@ void StripWindow::RenderTo(HDC hdc, int width, int height)
     m_respCells.clear();
     m_hovCells.clear();
     m_hsCells.clear();
+    m_taxiCells.clear();
+    m_deiceCells.clear();
     m_rwyCells.clear();
     m_dlCells.clear();
     m_goneCells.clear();
@@ -3854,6 +3993,15 @@ void StripWindow::DrawTopBar(HDC hdc)
         r = rUndo.left - Sx(8);
         DrawButton(hdc, rUndo, ul, col::button, col::text, A_UNDO, false);
     }
+    // Suche / Filter: mit aktivem Filter steht er auf der Taste, ein Tipp loescht ihn
+    {
+        std::wstring sl = m_filter.empty() ? std::wstring(L"Search") : L"\x00D7 " + W(m_filter);
+        int sw = std::min(Sx(220), TextWidth(hdc, sl, m_fButton) + Sx(24));
+        RECT rSearch = Rc(r - sw, by, r, by + bh);
+        r = rSearch.left - Sx(8);
+        DrawButton(hdc, rSearch, sl, m_filter.empty() ? col::button : RGB(250, 180, 70), m_filter.empty() ? col::text : col::onAccent,
+                   A_SEARCH, false);
+    }
     // Rechts der Bereich (Dropdown, nur bei getrennten Pisten), links davon die Station (Dropdown)
     // Bereich (Nord/Sued): beim Tower immer, bei Ground/Apron/Delivery nur mit getrenntem Ground (Berlin)
     if (m_board.rwySplit && m_view != VIEW_DEL && (m_board.splitGnd || m_view == VIEW_TWR || m_view == VIEW_ALL))
@@ -3895,6 +4043,16 @@ void StripWindow::DrawTopBar(HDC hdc)
     if (!m_board.vacdmError.empty())
     {
         std::wstring t = L"vACDM: " + W(m_board.vacdmError.substr(0, 28));
+        int pw = TextWidth(hdc, t, m_fButton) + Sx(16);
+        RECT pr = Rc(wxRight - pw, (row1 - Sx(28)) / 2, wxRight, (row1 - Sx(28)) / 2 + Sx(28));
+        RoundBox(hdc, pr, Sx(6), RGB(200, 50, 40), RGB(200, 50, 40));
+        Text(hdc, pr, t, m_fButton, RGB(255, 255, 255), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        wxRight = pr.left - Sx(10);
+    }
+    // andere StripBay-Hauptversion bei einem Lotsen am Platz: rote Marke
+    if (!m_board.opt.verWarn.empty())
+    {
+        std::wstring t = W(m_board.opt.verWarn.substr(0, 30));
         int pw = TextWidth(hdc, t, m_fButton) + Sx(16);
         RECT pr = Rc(wxRight - pw, (row1 - Sx(28)) / 2, wxRight, (row1 - Sx(28)) / 2 + Sx(28));
         RoundBox(hdc, pr, Sx(6), RGB(200, 50, 40), RGB(200, 50, 40));
@@ -5741,6 +5899,53 @@ void StripWindow::DrawStrip(HDC hdc, const RECT& rcIn, const StripData& s, int b
     if (handed)
         for (Cell& c : cells)
             if (wcscmp(c.label, L"FREQ") == 0) { c.fill = RGB(250, 180, 70); if (c.value.empty() || c.value == L"-") c.value = L"\x2713"; }
+    // Rollweg und Enteisung: eigene Felder "TWY" und "DEICE" vor REMARK (Antippen = aendern bzw. weiterschalten).
+    // Den Platz geben REMARK, FREQ, SID bzw. STAND, CFL und TSAT ab - so sind sie auch auf schmalen Streifen zu lesen.
+    // DEICE: blau REQ = angefragt, grau DONE = enteist.
+    {
+        const std::string tx = s.freeStrip ? std::string() : TaxiOf(m_board, s.callsign);
+        const int di = s.freeStrip ? 0 : DeiceOf(m_board, s.callsign);
+        if (di)
+        {
+            int need = 11;
+            auto take = [&](const wchar_t* label, int minPct) {
+                for (Cell& c : cells)
+                    if (need > 0 && wcscmp(c.label, label) == 0 && c.pct > minPct)
+                    {
+                        int t = std::min(need, c.pct - minPct);
+                        c.pct -= t;
+                        need -= t;
+                    }
+            };
+            take(L"REMARK", 4); take(L"FREQ", 11); take(L"SID", 11); take(L"STAND", 14); take(L"CFL", 9); take(L"TSAT", 8);
+            Cell dc{ L"DEICE", di == 1 ? L"REQ" : L"DONE", 11 - need, col::ink };
+            dc.fill = di == 1 ? RGB(150, 200, 245) : RGB(205, 210, 215);
+            size_t at = cells.size();
+            for (size_t i = 0; i < cells.size(); ++i)
+                if (wcscmp(cells[i].label, L"REMARK") == 0) { at = i; break; }
+            cells.insert(cells.begin() + at, dc);
+        }
+        if (!tx.empty())
+        {
+            int need = 18;
+            auto take = [&](const wchar_t* label, int minPct) {
+                for (Cell& c : cells)
+                    if (need > 0 && wcscmp(c.label, label) == 0 && c.pct > minPct)
+                    {
+                        int t = std::min(need, c.pct - minPct);
+                        c.pct -= t;
+                        need -= t;
+                    }
+            };
+            take(L"REMARK", 6); take(L"FREQ", 11); take(L"SID", 11); take(L"STAND", 14); take(L"CFL", 9); take(L"TSAT", 8);
+            Cell twy{ L"TWY", W(tx), 18 - need, col::ink };
+            twy.fill = RGB(188, 228, 228);
+            size_t at = cells.size();
+            for (size_t i = 0; i < cells.size(); ++i)
+                if (wcscmp(cells[i].label, L"REMARK") == 0) { at = i; break; }
+            cells.insert(cells.begin() + at, twy);
+        }
+    }
     if (s.freeStrip) cells.clear();   // Notiz-Streifen: nur der Text oben
     int cx = x0;
     int labelH = Sx(13);
@@ -5759,6 +5964,10 @@ void StripWindow::DrawStrip(HDC hdc, const RECT& rcIn, const StripData& s, int b
             m_spCells.push_back({ Rc(cx, yMid, cx + cw, rc.bottom), s.callsign });
         if (!ghost && wcscmp(cells[i].label, L"PB") == 0)
             m_pbCells.push_back({ Rc(cx, yMid, cx + cw, rc.bottom), s.callsign });
+        if (!ghost && wcscmp(cells[i].label, L"TWY") == 0)
+            m_taxiCells.push_back({ Rc(cx, yMid, cx + cw, rc.bottom), s.callsign });
+        if (!ghost && wcscmp(cells[i].label, L"DEICE") == 0)
+            m_deiceCells.push_back({ Rc(cx, yMid, cx + cw, rc.bottom), s.callsign });
         if (!ghost && wcscmp(cells[i].label, L"TSAT") == 0 && m_board.opt.vacdm)
             m_tsatCells.push_back({ Rc(cx, yMid, cx + cw, rc.bottom), s.callsign });
         if (!ghost && wcscmp(cells[i].label, L"RWY") == 0)
@@ -5894,6 +6103,10 @@ void StripWindow::DrawDetail(HDC hdc, int width, int height)
     swprintf(gsalt, 64, L"%d kt  /  %d ft", s.groundSpeed, s.altitude);
 
     std::wstring hsText = s.holdShort.empty() ? std::wstring(L"-") : W(s.holdShort);
+    const std::string taxi = TaxiOf(m_board, s.callsign);
+    const int deice = DeiceOf(m_board, s.callsign);
+    std::wstring taxiText = taxi.empty() ? std::wstring(L"-") : W(taxi);
+    std::wstring deiceText = deice == 1 ? L"requested" : deice == 2 ? L"done" : L"-";
 
     // Naechste Frequenz mit Station: "119.625  (EDDB_N_APP)"
     std::wstring freqText = s.nextFreq.empty() ? std::wstring(L"-") : W(s.nextFreq) + L"  (" + W(s.nextCtrl) + L")";
@@ -5924,6 +6137,8 @@ void StripWindow::DrawDetail(HDC hdc, int width, int height)
         // Ankunft in der Luft: Parkposition zuerst
         f.push_back({ L"STAND", StandDetail(s), s.standConflict || s.standBusy || s.standMissing });
         f.push_back({ L"HOLD SHORT", hsText, !s.holdShort.empty() });
+        f.push_back({ L"TAXI ROUTE", taxiText, false });
+        f.push_back({ L"DE-ICING", deiceText, false, deice == 2 });
         f.push_back({ L"RUNWAY", rwyText, rwyWarn });
         f.push_back({ L"SQUAWK", Or(s.squawkAssigned), false });
         f.push_back({ L"ORIGIN", Or(s.adep) + (s.divertFrom.empty() ? std::wstring() : L"  (diversion, planned " + W(s.divertFrom) + L")"),
@@ -5943,6 +6158,8 @@ void StripWindow::DrawDetail(HDC hdc, int width, int height)
         // Ankunft am Boden: Parkposition zuerst
         f.push_back({ L"STAND", StandDetail(s), s.standConflict || s.standBusy || s.standMissing });
         f.push_back({ L"HOLD SHORT", hsText, !s.holdShort.empty() });
+        f.push_back({ L"TAXI ROUTE", taxiText, false });
+        f.push_back({ L"DE-ICING", deiceText, false, deice == 2 });
         f.push_back({ L"RUNWAY", rwyText, rwyWarn });
         f.push_back({ L"STAR", Or(s.star), false });
         f.push_back({ L"SQUAWK", Or(s.squawkAssigned), false });
@@ -5962,6 +6179,8 @@ void StripWindow::DrawDetail(HDC hdc, int width, int height)
         f.push_back({ L"SID", Or(s.sid), !s.vsidErr.empty() });
         if (!s.vsidErr.empty()) f.push_back({ L"CHECK (vSID)", W(s.vsidErr) + L": " + W(s.vsidErrText), true });
         f.push_back({ L"HOLD SHORT", hsText, !s.holdShort.empty() });
+        f.push_back({ L"TAXI ROUTE", taxiText, false });
+        f.push_back({ L"DE-ICING", deiceText, false, deice == 2 });
         f.push_back({ L"INTERSECTION", s.intersection.empty() ? std::wstring(L"-")
                                        : W(s.intersection) + (s.intAssigned ? L"  (assigned)" : L"  (able for)"),
                       false, s.intAssigned });
@@ -6106,6 +6325,7 @@ void StripWindow::DrawDetail(HDC hdc, int width, int height)
             { L"INTERSECTION", A_INT_OPEN },            { L"SCRATCHPAD", A_EDIT_OPEN },
             { L"CLEARANCE", A_CLEARANCE },              { L"LANDING CLEARANCE (CTL)", A_RWY_CLEAR },
             { L"TAKEOFF CLEARANCE", A_RWY_CLEAR },     { L"RESPONSIBLE", A_FIELD_BASE + F_RESP },
+            { L"TAXI ROUTE", A_FIELD_BASE + F_TAXI },   { L"DE-ICING", A_DEICE },
         };
         for (const auto& fa : kFieldActions)
             if (wcscmp(f[i].label, fa.label) == 0) act = fa.action;
@@ -6304,7 +6524,8 @@ static const wchar_t* FieldTitle(int f)
     static const wchar_t* t[F_COUNT] = { L"SID", L"RUNWAY", L"SQUAWK", L"CFL / INITIAL ALTITUDE", L"FINAL ALTITUDE",
                                          L"FLIGHT RULES", L"TYPE", L"ALTERNATE", L"DESTINATION", L"ORIGIN", L"STAND",
                                          L"STAR", L"RADIO", L"HEADING", L"SPEED", L"EOBT", L"ROUTE", L"REMARKS",
-                                         L"NEXT FREQUENCY", L"GROUND STATE", L"HOLD SHORT", L"RESPONSIBLE", L"HISTORY" };
+                                         L"NEXT FREQUENCY", L"GROUND STATE", L"HOLD SHORT", L"RESPONSIBLE", L"HISTORY",
+                                         L"TAXI ROUTE" };
     return (f >= 0 && f < F_COUNT) ? t[f] : L"";
 }
 
@@ -6444,7 +6665,7 @@ void StripWindow::OpenFieldEditor(int field)
     std::string cs = m_pickCs.empty() ? m_detailCs : m_pickCs;
     const StripData* s = FindStrip(cs);
     if (!s) return;
-    std::string cur = FieldValue(*s, field, m_board.transitionAltitude);
+    std::string cur = field == F_TAXI ? TaxiOf(m_board, cs) : FieldValue(*s, field, m_board.transitionAltitude);
     OpenEditor(cs);
     if (!m_editing) return;
     m_editMode = 4;
@@ -7181,6 +7402,11 @@ void StripWindow::CloseEditor(bool commit)
         m_prevForeground = nullptr;
     }
     Invalidate();
+    if (mode == 7)
+    {
+        SetFilter(commit ? text : m_filterPrev);   // Abbrechen: der Filter von vorher gilt wieder
+        return;
+    }
     if (commit && m_host && mode == 6)
     {
         m_host->Command(prefix + text);   // Einstellung aus dem Einstellungsfenster
@@ -7254,11 +7480,17 @@ void StripWindow::EditKey(wchar_t c)
         int f = m_editField;
         bool digits = (f == F_SQUAWK || f == F_HDG || f == F_SPD || f == F_EOBT);
         bool freeText = (f == F_ROUTE || f == F_REMARKS);
-        size_t maxLen = freeText ? 400 : (f == F_SQUAWK || f == F_EOBT) ? 4 : 12;
+        size_t maxLen = freeText ? 400 : (f == F_SQUAWK || f == F_EOBT) ? 4 : (f == F_HDG || f == F_SPD) ? 3 : f == F_TAXI ? 24 : 12;
         bool okChar = digits ? (c >= L'0' && c <= L'9')
+                             : f == F_TAXI ? ((iswalnum(c) || c == L' ') && c < 127)
                              : freeText ? (c >= 32 && c < 127)
                                         : (iswalnum(c) || c == L'.' || c == L'-' || c == L'/') && c < 127;
         if (okChar && m_editText.size() < maxLen) m_editText += (char)(f == F_REMARKS ? c : towupper(c));
+    }
+    else if (m_editMode == 7)
+    {
+        // Suche: sofort filtern
+        if ((iswalnum(c) || c == L' ') && c < 127 && m_editText.size() < 24) m_editText += (char)towupper(c);
     }
     else if (m_editMode == 6)
     {
@@ -7284,6 +7516,38 @@ void StripWindow::EditKey(wchar_t c)
     else if (c >= 32 && c < 127 && m_editText.size() < kScratchMax)
     {
         m_editText += (char)c;
+    }
+    if (m_editMode == 7) SetFilter(m_editText);   // Suche: beim Tippen filtern
+    Invalidate();
+}
+
+// Nimmt der Editor nur Ziffern (Squawk, Heading, Speed, EOBT)? Dann zeigt er ein Zahlenfeld statt der Tastatur.
+bool StripWindow::EditNumeric() const
+{
+    return m_editing && m_editMode == 4 &&
+           (m_editField == F_SQUAWK || m_editField == F_HDG || m_editField == F_SPD || m_editField == F_EOBT);
+}
+
+// Suche / Filter: Text eingeben, die Spalten zeigen sofort nur noch die passenden Streifen
+void StripWindow::OpenSearch()
+{
+    m_detailCs.clear();
+    m_trashOpen = false;
+    m_setOpen = false;
+    m_filterPrev = m_filter;
+    m_editCs.clear();
+    m_editText = m_filter;
+    m_editMode = 7;
+    m_inkMode = false;
+    m_editing = true;
+    if (m_hwnd)
+    {
+        DpiScope dpi;
+        m_prevForeground = GetForegroundWindow();
+        LONG_PTR ex = GetWindowLongPtrW(m_hwnd, GWL_EXSTYLE);
+        SetWindowLongPtrW(m_hwnd, GWL_EXSTYLE, ex & ~(LONG_PTR)WS_EX_NOACTIVATE);
+        SetForegroundWindow(m_hwnd);
+        SetFocus(m_hwnd);
     }
     Invalidate();
 }
@@ -7398,7 +7662,9 @@ void StripWindow::DrawEditor(HDC hdc, int width, int height)
 
     int pad = Sx(18), gap = Sx(6);
     bool route = RouteEditing();
-    int cardW = std::min(width - Sx(24), route ? Sx(980) : Sx(860));
+    const bool numeric = EditNumeric();                       // nur Ziffern: Zahlenfeld statt Tastatur
+    const bool ink = m_inkMode && !numeric && m_editMode != 7;
+    int cardW = std::min(width - Sx(24), route ? Sx(980) : numeric ? Sx(460) : Sx(860));
     int keyW = (cardW - 2 * pad - 9 * gap) / 10;
     int keyH = std::max(Sx(48), std::min(Sx(62), (height - Sx(240)) / 5));
     int titleH = Sx(46), inputH = Sx(64);
@@ -7422,6 +7688,7 @@ void StripWindow::DrawEditor(HDC hdc, int width, int height)
     Text(hdc, Rc(x, y, cx + cardW - pad, y + titleH - Sx(8)),
          (m_editMode == 4 ? std::wstring(FieldTitle(m_editField)) + L"  " :
           m_editMode == 6 ? m_editTitle + L"  " :
+          m_editMode == 7 ? std::wstring(L"SEARCH / FILTER   (callsign or airline, type, runway, SID, stand, airport)") :
           m_editMode == 5 ? std::wstring(L"CPDLC FREE TEXT  ") :
           m_editMode == 3 ? std::wstring(L"NEW STRIP   (callsign; without a flight plan it becomes a note strip)") :
           m_editMode == 1 ? std::wstring(L"INTERSECTION  ") : m_editMode == 2 ? std::wstring(L"HOLD SHORT  ")
@@ -7430,11 +7697,12 @@ void StripWindow::DrawEditor(HDC hdc, int width, int height)
                               : m_editMode == 2 ? L"   (OK = set, empty = clear)" : L""),
          m_fHeader, col::textDim);
     // Umschalter Stift / Tastatur (rechts in der Titelzeile)
+    if (!numeric && m_editMode != 7)
     {
         int bw = Sx(150);
         DrawButton(hdc, Rc(cx + cardW - pad - bw, y - Sx(4), cx + cardW - pad, y + titleH - Sx(10)),
-                   m_inkMode ? L"Keyboard" : L"Pen (handwriting)", m_inkMode ? col::button : RGB(70, 110, 190),
-                   m_inkMode ? col::text : RGB(255, 255, 255), A_EDIT_INK, false);
+                   ink ? L"Keyboard" : L"Pen (handwriting)", ink ? col::button : RGB(70, 110, 190),
+                   ink ? col::text : RGB(255, 255, 255), A_EDIT_INK, false);
     }
     y += titleH;
 
@@ -7472,12 +7740,16 @@ void StripWindow::DrawEditor(HDC hdc, int width, int height)
     wchar_t cnt[16];
     swprintf(cnt, 16, L"%d/%d", (int)m_editText.size(),
              m_editMode == 1 ? 3 : m_editMode == 2 ? 6 : m_editMode == 3 ? 16 : m_editMode == 5 ? 160 : m_editMode == 6 ? 80
-             : m_editMode == 4 ? ((m_editField == F_ROUTE || m_editField == F_REMARKS) ? 400 : 12) : (int)kScratchMax);
+             : m_editMode == 7 ? 24
+             : m_editMode == 4 ? ((m_editField == F_ROUTE || m_editField == F_REMARKS) ? 400
+                                  : (m_editField == F_SQUAWK || m_editField == F_EOBT) ? 4
+                                  : (m_editField == F_HDG || m_editField == F_SPD) ? 3 : m_editField == F_TAXI ? 24 : 12)
+             : (int)kScratchMax);
     Text(hdc, Inset(in, Sx(12), 0), cnt, m_fDetailLabel, col::textDim, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
     y += inputH + Sx(14);
     }
 
-    if (m_inkMode)
+    if (ink)
     {
         // Schreibfeld statt der ersten drei Tastenreihen
         int padH = 3 * keyH + 2 * gap;
@@ -7517,7 +7789,28 @@ void StripWindow::DrawEditor(HDC hdc, int width, int height)
     }
     // Tastatur (QWERTZ)
     static const char* rows[4] = { "1234567890", "QWERTZUIOP", "ASDFGHJKL/", "YXCVBNM.-\b" };
-    for (int r = 0; r < (m_inkMode ? 0 : 4); ++r)
+    if (numeric)
+    {
+        // Zahlenfeld: 1-9, darunter Zurueck und 0
+        static const char* nrows[4] = { "123", "456", "789", "\b0" };
+        int kw3 = (cardW - 2 * pad - 2 * gap) / 3;
+        for (int r = 0; r < 4; ++r)
+        {
+            for (int k = 0; nrows[r][k]; ++k)
+            {
+                char ch = nrows[r][k];
+                RECT kr = Rc(x + k * (kw3 + gap), y, k == 2 ? cx + cardW - pad : x + k * (kw3 + gap) + kw3, y + keyH);
+                if (ch == '\b') DrawButton(hdc, kr, L"\x2190", col::buttonAlt, col::text, A_EDIT_BACK, false);
+                else
+                {
+                    wchar_t lab[2] = { (wchar_t)ch, 0 };
+                    DrawButton(hdc, kr, lab, col::button, col::text, A_KEY_BASE + (unsigned char)ch, false);
+                }
+            }
+            y += keyH + gap;
+        }
+    }
+    for (int r = 0; r < (ink || numeric ? 0 : 4); ++r)
     {
         for (int k = 0; k < 10; ++k)
         {
@@ -7568,14 +7861,22 @@ void StripWindow::DrawEditor(HDC hdc, int width, int height)
         DrawButton(hdc, Rc(bx + hw + gap, y, bx + w4, y + keyH), L"Paste", RGB(70, 110, 190), RGB(255, 255, 255),
                    A_EDIT_PASTE, false);
     }
-    else
+    else if (m_editMode == 7)
+    {
+        // Suche: Leerzeichen (weiteres Wort) und die Warteschlange fuer die Enteisung
+        int hw = (w4 - gap) / 2;
+        DrawButton(hdc, Rc(bx, y, bx + hw, y + keyH), L"Space", col::button, col::text, A_KEY_BASE + ' ', false);
+        DrawButton(hdc, Rc(bx + hw + gap, y, bx + w4, y + keyH), L"De-icing queue", RGB(40, 130, 215), RGB(255, 255, 255),
+                   A_EDIT_FDEICE, false);
+    }
+    else if (!numeric)
         DrawButton(hdc, Rc(bx, y, bx + w4, y + keyH), route ? L"Space  (next point)" : L"Space", col::button, col::text,
                    A_KEY_BASE + ' ', false);
     bx += w4 + gap;
     DrawButton(hdc, Rc(bx, y, bx + w2, y + keyH), L"Cancel", col::danger, col::text, A_EDIT_CANCEL, false);
     bx += w2 + gap;
     DrawButton(hdc, Rc(bx, y, x + cardW - 2 * pad, y + keyH),
-               m_editMode == 1 ? L"Assigned" : m_editMode == 3 ? L"Create" : m_editMode == 5 ? L"Send" : L"OK", col::ok,
+               m_editMode == 1 ? L"Assigned" : m_editMode == 3 ? L"Create" : m_editMode == 5 ? L"Send" : m_editMode == 7 ? L"Show" : L"OK", col::ok,
                RGB(255, 255, 255),
                A_EDIT_OK, false);
 }

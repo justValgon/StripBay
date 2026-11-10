@@ -233,6 +233,7 @@ enum Field
     F_SID = 0, F_RWY, F_SQUAWK, F_CFL, F_RFL, F_RULES, F_TYPE, F_ALTN, F_ADES, F_ADEP, F_STAND, F_STAR, F_COMM,
     F_HDG, F_SPD, F_EOBT, F_ROUTE, F_REMARKS, F_FREQ, F_STATE, F_HS, F_RESP,
     F_HISTORY,   // Verlauf des Streifens (nur lesen): FieldOptions liefert die Zeilen, neueste zuerst
+    F_TAXI,      // Rollweg (freie Eingabe, leer = loeschen)
     F_COUNT
 };
 
@@ -291,6 +292,13 @@ struct Board
         // --- ab 3.1.0: neue Felder nur hier unten anfuegen. Wire.h liest sie optional (TAIL in genwire.py),
         // damit StripBay Remote 3.0 und 3.1 weiter zusammenpassen.
         bool respOn = true;       // Zustaendigkeit / Uebergaben; aus = niemand wird als zustaendig eingetragen
+        // --- ab 4.2.0 (ebenfalls optional am Ende): Angaben je Streifen stehen hier als Tabelle nach Callsign,
+        // damit StripBay Remote 4.0/4.1 und 4.2 weiter zusammenpassen (StripData bleibt unveraendert).
+        std::map<std::string, std::string> taxi;   // Rollweg, z. B. "A B B3" (synchron ueber ".SB_TX_")
+        std::map<std::string, int> deice;          // Enteisung: 1 = angefragt, 2 = erledigt (synchron ueber ".SB_DI_")
+        std::string updAvail;     // neuere Version auf GitHub, z. B. "4.3.0" (leer = keine / nicht geprueft)
+        std::string verWarn;      // andere StripBay-Version bei einem Lotsen am Platz (Text, leer = keine)
+        bool updCheck = true;     // beim Start nach einer neueren Version sehen
     } opt;
 
     // CPDLC (Hoppie)
@@ -322,6 +330,18 @@ struct Board
     std::string remoteAddr;      // Adresse(n) dieses PCs im Netz, z. B. "192.168.1.20"
 };
 // Neues Feld in StripData, Board oder Options? Auch in Wire.h (Remote) eintragen - der Test prueft das.
+
+// Rollweg bzw. Enteisung eines Streifens (stehen als Tabelle in den Optionen, siehe dort)
+inline std::string TaxiOf(const Board& b, const std::string& cs)
+{
+    auto f = b.opt.taxi.find(cs);
+    return f == b.opt.taxi.end() ? std::string() : f->second;
+}
+inline int DeiceOf(const Board& b, const std::string& cs)
+{
+    auto f = b.opt.deice.find(cs);
+    return f == b.opt.deice.end() ? 0 : f->second;
+}
 
 // Rueckkanal vom Fenster zum Plugin. Alle Aufrufe kommen aus dem
 // EuroScope-Hauptthread, das Plugin darf also direkt die ES-API nutzen.

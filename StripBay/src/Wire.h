@@ -33,6 +33,11 @@ namespace wire
             u32((uint32_t)m.size());
             for (auto& kv : m) { std::string k = kv.first; (*this)(k); (*this)(kv.second); }
         }
+        void operator()(std::map<std::string, std::string>& m)
+        {
+            u32((uint32_t)m.size());
+            for (auto& kv : m) { std::string k = kv.first; (*this)(k); (*this)(kv.second); }
+        }
         template<class T> void operator()(std::vector<T>& v)
         {
             u32((uint32_t)v.size());
@@ -89,6 +94,13 @@ namespace wire
             uint32_t n = u32();
             if (n > 100000) { m_ok = false; return; }
             for (uint32_t i = 0; i < n && m_ok; ++i) { std::string k; int v = 0; (*this)(k); (*this)(v); m[k] = v; }
+        }
+        void operator()(std::map<std::string, std::string>& m)
+        {
+            m.clear();
+            uint32_t n = u32();
+            if (n > 100000) { m_ok = false; return; }
+            for (uint32_t i = 0; i < n && m_ok; ++i) { std::string k, v; (*this)(k); (*this)(v); m[k] = v; }
         }
         template<class T> void operator()(std::vector<T>& v)
         {
@@ -266,8 +278,13 @@ namespace wire
         a(o.intNorth);
         a(o.intSouth);
         a(o.colWidths);
-        // ab 3.1.0 (optional, fehlt bei StripBay 3.0)
+        // ab 3.1.0 bzw. 4.2.0 (optional, fehlt bei aelteren Gegenstellen)
         if (a.more()) a(o.respOn);
+        if (a.more()) a(o.taxi);
+        if (a.more()) a(o.deice);
+        if (a.more()) a(o.updAvail);
+        if (a.more()) a(o.verWarn);
+        if (a.more()) a(o.updCheck);
     }
 
     template<class A> void Io(A& a, Board& b)
