@@ -1,7 +1,7 @@
 # StripBay – Handbuch
 
 Autoren: Luis Korb, Sören Pflug
-Änderungen je Version stehen im [Änderungsverlauf](CHANGELOG.md). Die Kurzübersicht steht in der [README](../README.md).
+Änderungen je Version stehen im [Änderungsverlauf](CHANGELOG.de.md). Die Kurzübersicht steht in der [README](../README.md).
 
 
 EuroScope-Plugin mit eigenem Touch-Fenster für elektronische Flugstreifen, mit fertigen Profilen für Berlin (EDDB), Leipzig (EDDP) und Hannover (EDDV). Die Streifen liegen in Bays und lassen sich per Drag and Drop verschieben. Jede Verschiebung setzt den Ground State in EuroScope, den auch TopSky, das Ground Radar Plugin und andere Lotsen sehen. Ändert jemand den Status woanders (TopSky-Label, Departure List, anderer Lotse), wandert der Streifen automatisch mit.
@@ -35,7 +35,7 @@ EuroScope-Plugin mit eigenem Touch-Fenster für elektronische Flugstreifen, mit 
 
 ## Bauen
 
-### Einfach: Doppelklick auf `INSTALLIEREN.bat`
+### Einfach: Doppelklick auf `INSTALL.bat`
 
 Der Installer erledigt alles auf deinem Windows-PC:
 

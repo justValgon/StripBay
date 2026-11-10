@@ -4578,7 +4578,7 @@ void StripBayPlugin::RemoteStatus()
     Msg("Remote: on, port " + std::to_string(m_remotePort) + ", this PC " + (m_remoteAddr.empty() ? std::string("?") : m_remoteAddr) +
         ", code " + m_remoteCode + (who.empty() ? std::string(", no device connected.") : ", connected: " + who + "."));
     if (who.empty())
-        Msg("Remote: device cannot connect? Run REMOTE-FREIGABE.bat (next to INSTALLIEREN.bat) once on this PC - it opens the Windows firewall for StripBay Remote.");
+        Msg("Remote: device cannot connect? Run REMOTE-FIREWALL.bat (next to INSTALL.bat) once on this PC - it opens the Windows firewall for StripBay Remote.");
 }
 
 void StripBayPlugin::DlProcess()

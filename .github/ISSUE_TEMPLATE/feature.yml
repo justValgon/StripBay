@@ -1,0 +1,10 @@
+name: Feature request / Feature-Wunsch
+description: Idea or improvement / Idee oder Verbesserung
+labels: ["feature"]
+body:
+  - type: textarea
+    id: idee
+    attributes:
+      label: What should StripBay do, and why? / Was soll StripBay können, und wofür?
+    validations:
+      required: true

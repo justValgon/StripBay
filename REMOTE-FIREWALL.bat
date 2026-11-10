@@ -12,11 +12,11 @@ rem       "Abbrechen" geschlossen wurde),
 rem    3. bietet an, ein als "oeffentlich" eingestuftes Heimnetz als "privat"
 rem       einzustufen (sonst gilt die Freigabe dort nicht).
 rem
-rem  Anderer Port (.strips remote port N):   REMOTE-FREIGABE.bat N
+rem  Anderer Port (.strips remote port N):   REMOTE-FIREWALL.bat N
 rem ===========================================================================
 setlocal EnableExtensions
 title StripBay Remote - Firewall
-set "PS1=%~dp0StripBay\tools\RemoteFreigabe.ps1"
+set "PS1=%~dp0StripBay\tools\RemoteFirewall.ps1"
 set "PORT=%~1"
 if not defined PORT set "PORT=47810"
 if not exist "%PS1%" goto missing
@@ -37,7 +37,7 @@ exit /b 0
 
 :missing
 echo.
-echo  Die Datei StripBay\tools\RemoteFreigabe.ps1 fehlt.
+echo  Die Datei StripBay\tools\RemoteFirewall.ps1 fehlt.
 echo  Bitte das StripBay-Paket vollstaendig entpacken.
 echo.
 pause

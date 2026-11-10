@@ -1,5 +1,12 @@
 # Änderungsverlauf
 
+## Neu in 4.1.1
+
+- **Lizenz:** MIT (vorher CC0).
+- **Englische Dateinamen:** `INSTALLIEREN.bat` heißt jetzt `INSTALL.bat`, `REMOTE-FREIGABE.bat` heißt `REMOTE-FIREWALL.bat`, `SDK-PAKET.bat` heißt `SDK-PACK.bat`, `tools\RemoteFreigabe.ps1` heißt `RemoteFirewall.ps1`. Die Meldungen in EuroScope und in StripBay Remote nennen die neuen Namen.
+- **READMEs zweisprachig:** `README.md` (Englisch) und `README.de.md` (Deutsch), ebenso `Remote\README.txt` / `README.de.txt` und `StripBay\sdk\README.txt` / `README.de.txt`. Handbuch und Änderungsverlauf bleiben Deutsch (`docs\MANUAL.de.md`, `docs\CHANGELOG.de.md`).
+- Keine Funktionsänderung, kein Protokollwechsel: 4.1.1 verträgt sich mit allen 4.x.
+
 ## Neu in 4.1.0
 
 ### Gemischter Betrieb: besetzte Stellen ohne StripBay
@@ -76,15 +83,15 @@ Grundlage ist die veröffentlichte Beschreibung der DFS-Planungsanzeige (Bergner
 
 - **Grund statt „keine Antwort“:** Das Verbinden-Fenster und die Karte „NOT CONNECTED“ nennen jetzt, woran es liegt:
   - „… answers, but StripBay Remote is not on there“: Der PC ist erreichbar, aber in EuroScope ist Remote aus → `.strips remote on`.
-  - „No answer from …“: fast immer die **Windows-Firewall** am EuroScope-PC → **REMOTE-FREIGABE.bat** (siehe unten).
+  - „No answer from …“: fast immer die **Windows-Firewall** am EuroScope-PC → **REMOTE-FIREWALL.bat** (siehe unten).
   - „… not in the network of this device“: Die Adresse gehört zu einem anderen Netz (VPN, Gast-WLAN).
   - „PC … not found“: Den Namen kennt das Netz nicht → IP-Adresse eingeben (`.strips remote status`).
-- **Neu: REMOTE-FREIGABE.bat** (neben INSTALLIEREN.bat), einmal am EuroScope-PC ausführen. Mit Administratorrechten:
+- **Neu: REMOTE-FIREWALL.bat** (neben INSTALL.bat), einmal am EuroScope-PC ausführen. Mit Administratorrechten:
   - erlaubt eingehend TCP 47810 und UDP 47811 in privaten Netzwerken,
   - findet Sperren der Firewall für EuroScope (entstehen, wenn die Firewall-Abfrage einmal mit „Abbrechen“ geschlossen wurde) und schaltet sie auf Wunsch ab,
   - bietet an, ein als „öffentlich“ eingestuftes Heimnetz als „privat“ einzustufen,
   - zeigt die Adresse des PCs.
-  - Bei anderem Port: `REMOTE-FREIGABE.bat 47820`.
+  - Bei anderem Port: `REMOTE-FIREWALL.bat 47820`.
 - **Search** ruft jetzt auf jedem Netzwerkadapter, nicht nur auf dem ersten. Vorher konnte die Suche mit VPN, Hyper-V oder WSL ins Leere gehen.
 - **Adresse in EuroScope:** `.strips remote status` und die Settings zeigen zuerst die Adresse im Heimnetz, virtuelle Adapter nicht mehr.
 - **Neue IP-Adresse:** Bekommt der EuroScope-PC vom Router eine andere IP, findet das Gerät ihn nach zwei Fehlversuchen über seinen Namen wieder.
@@ -100,7 +107,7 @@ Neues Programm **StripBayRemote.exe** für einen zweiten Windows-PC, einen Lapto
 
 - **Synchron ohne Abstriche:** Das Gerät ist nur Anzeige und Eingabe. Jede Aktion (Ziehen, Freigaben, Felder, Hold Short, Farben, Zeitstrahl, CPDLC, Papierkorb …) geht an StripBay in EuroScope und läuft dort durch denselben Code wie ein Tipp am PC, inklusive Abgleich mit allen anderen Lotsen über das Scratchpad. Der Zustand kommt bei jeder Änderung zurück, im Netz in wenigen Millisekunden.
 - **Einrichten:**
-  - `INSTALLIEREN.bat` baut jetzt auch StripBayRemote.exe und legt sie in den Ordner **Remote**.
+  - `INSTALL.bat` baut jetzt auch StripBayRemote.exe und legt sie in den Ordner **Remote**.
   - In EuroScope `.strips remote on` (oder Settings → **Remote (other PC)**). Der Chat zeigt Adresse und 6-stelligen Code, die Settings unter **Remote pairing**.
   - Fragt Windows nach der Firewall: EuroScope für **private Netzwerke** zulassen.
   - Ordner **Remote** auf das andere Gerät kopieren und StripBayRemote.exe starten. **Search** findet EuroScope im Netz (sonst PC-Name oder IP eingeben), Code eingeben, **Connect**.

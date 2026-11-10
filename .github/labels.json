@@ -1,21 +1,97 @@
 [
- ["bug","d73a4a","Etwas funktioniert nicht"],
- ["absturz","b60205","EuroScope oder Plugin stürzt ab"],
- ["feature","a2eeef","Neue Funktion oder Wunsch"],
- ["frage","d876e3","Frage zur Bedienung"],
- ["sync","1d76db","Abgleich zwischen Lotsen (Scratchpad)"],
- ["übergabe","0e8a16","Übergabe, Zuständigkeit, Annehmen/Ablehnen"],
- ["gemischter-betrieb","5319e7","Stationen ohne StripBay"],
- ["timeline","fbca04","Zeitstrahl"],
- ["streifen","c5def5","Anzeige und Felder der Streifen"],
- ["runway","f9d0c4","Runway-Bay, Freigaben, Line-up"],
- ["remote","006b75","StripBay Remote (zweites Gerät)"],
- ["profil-eddb","bfdadc","Berlin"],
- ["profil-eddp","bfdadc","Leipzig"],
- ["profil-eddv","bfdadc","Hannover"],
- ["plugin-kompatibilität","e99695","TopSky, GRP, vACDM, Hoppie"],
- ["installation","c2e0c6","Installer, Build, SDK"],
- ["touch-bedienung","fef2c0","Touchscreen, Stift, Tastatur"],
- ["dokumentation","0075ca","Handbuch und README"],
- ["nicht-nachvollziehbar","ededed","Fehler lässt sich nicht nachstellen"]
+ [
+  "bug",
+  "d73a4a",
+  "Something does not work"
+ ],
+ [
+  "crash",
+  "b60205",
+  "EuroScope or plugin crashes"
+ ],
+ [
+  "feature",
+  "a2eeef",
+  "New feature or request"
+ ],
+ [
+  "question",
+  "d876e3",
+  "Question about usage"
+ ],
+ [
+  "sync",
+  "1d76db",
+  "Sync between controllers (scratchpad)"
+ ],
+ [
+  "handover",
+  "0e8a16",
+  "Handover, responsibility, accept/reject"
+ ],
+ [
+  "mixed-operation",
+  "5319e7",
+  "Stations without StripBay"
+ ],
+ [
+  "timeline",
+  "fbca04",
+  "Timeline"
+ ],
+ [
+  "strips",
+  "c5def5",
+  "Strip display and fields"
+ ],
+ [
+  "runway",
+  "f9d0c4",
+  "Runway bay, clearances, line-up"
+ ],
+ [
+  "remote",
+  "006b75",
+  "StripBay Remote (second device)"
+ ],
+ [
+  "profile-eddb",
+  "bfdadc",
+  "Berlin"
+ ],
+ [
+  "profile-eddp",
+  "bfdadc",
+  "Leipzig"
+ ],
+ [
+  "profile-eddv",
+  "bfdadc",
+  "Hannover"
+ ],
+ [
+  "compatibility",
+  "e99695",
+  "TopSky, GRP, vACDM, Hoppie"
+ ],
+ [
+  "installation",
+  "c2e0c6",
+  "Installer, build, SDK"
+ ],
+ [
+  "touch-input",
+  "fef2c0",
+  "Touchscreen, pen, keyboard"
+ ],
+ [
+  "documentation",
+  "0075ca",
+  "Manual and README"
+ ],
+ [
+  "cannot-reproduce",
+  "ededed",
+  "Cannot be reproduced"
+ ]
 ]

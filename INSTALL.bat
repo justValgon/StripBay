@@ -15,7 +15,7 @@ rem
 rem  Die SDK-Dateien duerfen auch einfach neben diesem Skript liegen.
 rem
 rem  Optional: EuroScope-Ordner als Argument, z. B.
-rem    INSTALLIEREN.bat "D:\Spiele\EuroScope"
+rem    INSTALL.bat "D:\Spiele\EuroScope"
 rem ===========================================================================
 setlocal EnableExtensions
 cd /d "%~dp0"
@@ -207,7 +207,7 @@ echo   StripBay Remote (weiteres Windows-Geraet im selben Netz):
 echo     1. In EuroScope: .strips remote on  (zeigt den Code)
 echo     2. Ordner "Remote" auf das andere Geraet kopieren und
 echo        StripBayRemote.exe starten, "Search", Code eingeben.
-echo     Verbindet es nicht: REMOTE-FREIGABE.bat auf DIESEM PC
+echo     Verbindet es nicht: REMOTE-FIREWALL.bat auf DIESEM PC
 echo     einmal ausfuehren (Windows-Firewall).
 echo  ===========================================================
 echo.

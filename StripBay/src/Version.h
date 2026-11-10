@@ -7,7 +7,7 @@
 //   PATCH  - nur Fehlerbehebungen
 #pragma once
 
-#define STRIPBAY_VERSION   "4.1.0"
+#define STRIPBAY_VERSION   "4.1.1"
 #define STRIPBAY_WIDEN2(x) L##x
 #define STRIPBAY_WIDEN(x)  STRIPBAY_WIDEN2(x)
 #define STRIPBAY_VERSION_W STRIPBAY_WIDEN(STRIPBAY_VERSION)

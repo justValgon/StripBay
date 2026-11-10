@@ -1,0 +1,37 @@
+name: Bug report / Fehler melden
+description: Something does not work as expected / Etwas funktioniert nicht wie erwartet
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: StripBay version / Version
+      placeholder: "4.1.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: profil
+    attributes:
+      label: Profile / Profil
+      options: [EDDB, EDDP, EDDV, Remote device, any]
+    validations:
+      required: true
+  - type: dropdown
+    id: rolle
+    attributes:
+      label: Your position / Deine Station
+      options: [DEL, APN, GND, TWR, Several, Other]
+  - type: textarea
+    id: was
+    attributes:
+      label: What happened, what did you expect? / Was ist passiert, was hast du erwartet?
+    validations:
+      required: true
+  - type: textarea
+    id: schritte
+    attributes:
+      label: Steps to reproduce / Schritte zum Nachstellen
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots, EuroScope messages, other plugins (TopSky, GRP, vACDM)

@@ -375,7 +375,7 @@ void RemoteApp::Search()
     else
         SetStatus(L"Nothing found (this device: " + W(OwnAddress()) + L"). In EuroScope: .strips remote on. "
                   L"Otherwise enter the IP address EuroScope shows (.strips remote status). Still nothing? Run "
-                  L"REMOTE-FREIGABE.bat once on the EuroScope PC (Windows firewall).");
+                  L"REMOTE-FIREWALL.bat once on the EuroScope PC (Windows firewall).");
 }
 
 LRESULT RemoteApp::DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -743,7 +743,7 @@ void RemoteApp::Fail(const std::wstring& why)
 
 std::wstring RemoteApp::NoAnswer() const
 {
-    return L"No answer from " + W(m_host) + L". Usually the Windows firewall on the EuroScope PC: run REMOTE-FREIGABE.bat "
+    return L"No answer from " + W(m_host) + L". Usually the Windows firewall on the EuroScope PC: run REMOTE-FIREWALL.bat "
            L"there once." + NetHint();
 }
 

@@ -1,6 +1,8 @@
 StripBay Remote - die Streifen auf einem weiteren Windows-Geraet
 =================================================================
 
+(English: README.txt)
+
 Was es ist
   Dasselbe Streifenfenster wie in EuroScope, auf einem zweiten Windows-PC,
   Laptop oder Windows-Tablet im selben Netz (WLAN/LAN). Alle Aktionen laufen
@@ -8,14 +10,14 @@ Was es ist
   Lotsen abgeglichen.
 
 Einrichten
-  1. Am EuroScope-PC: INSTALLIEREN.bat ausfuehren (baut auch StripBayRemote.exe
+  1. Am EuroScope-PC: INSTALL.bat ausfuehren (baut auch StripBayRemote.exe
      und legt sie in diesen Ordner).
   2. In EuroScope: .strips remote on
      Im Chat stehen Adresse und Code (auch in den StripBay-Settings unter
      "Remote pairing").
   3. Fragt Windows nach der Firewall: EuroScope fuer "Private Netzwerke"
-     zulassen. Sicherer: am EuroScope-PC einmal REMOTE-FREIGABE.bat
-     ausfuehren (liegt neben INSTALLIEREN.bat).
+     zulassen. Sicherer: am EuroScope-PC einmal REMOTE-FIREWALL.bat
+     ausfuehren (liegt neben INSTALL.bat).
   4. Diesen Ordner auf das andere Geraet kopieren (USB-Stick, Netzwerk),
      StripBayRemote.exe starten, "Search" druecken (oder Name/IP des
      EuroScope-PCs eingeben), Code eingeben, "Connect".
@@ -29,7 +31,7 @@ Verbindet nicht?
       -> in EuroScope: .strips remote on
   - "No answer from ..."
       -> fast immer die Windows-Firewall am EuroScope-PC:
-         REMOTE-FREIGABE.bat dort einmal ausfuehren. Ausserdem: beide
+         REMOTE-FIREWALL.bat dort einmal ausfuehren. Ausserdem: beide
          Geraete im selben WLAN/LAN (kein Gast-WLAN)?
   - "... not in the network of this device"
       -> die Adresse gehoert zu einem anderen Netz (z. B. VPN, Gast-WLAN).
@@ -48,3 +50,5 @@ Hinweise
     eingeben). Anderer Port: .strips remote port 47820, am Geraet
     PC:47820 eingeben.
   - Einstellungen des Geraets: %APPDATA%\StripBay\StripBayRemote.ini
+  - Alle Lotsen und das Remote-Geraet brauchen dieselbe Hauptversion
+    (erste Zahl).

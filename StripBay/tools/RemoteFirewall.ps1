@@ -1,5 +1,5 @@
 # StripBay Remote - Windows-Firewall auf dem EuroScope-PC freigeben.
-# Wird von REMOTE-FREIGABE.bat mit Administratorrechten gestartet.
+# Wird von REMOTE-FIREWALL.bat mit Administratorrechten gestartet.
 param([int]$Port = 47810)
 
 $Udp = 47811

@@ -97,13 +97,13 @@ exit /b 0
 
 :no_vs
 echo  Visual Studio bzw. die Build Tools mit C++ wurden nicht gefunden.
-echo  Bitte zuerst INSTALLIEREN.bat ausfuehren, der installiert sie bei Bedarf.
+echo  Bitte zuerst INSTALL.bat ausfuehren, der installiert sie bei Bedarf.
 goto end
 
 :no_sdk
 echo  Das Windows SDK mit 32-Bit-Bibliotheken wurde nicht gefunden
 echo  (erwartet unter %KITS%).
-echo  Bitte zuerst INSTALLIEREN.bat ausfuehren.
+echo  Bitte zuerst INSTALL.bat ausfuehren.
 goto end
 
 :fail
