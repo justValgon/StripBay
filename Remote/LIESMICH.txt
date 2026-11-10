@@ -1,0 +1,50 @@
+StripBay Remote - die Streifen auf einem weiteren Windows-Geraet
+=================================================================
+
+Was es ist
+  Dasselbe Streifenfenster wie in EuroScope, auf einem zweiten Windows-PC,
+  Laptop oder Windows-Tablet im selben Netz (WLAN/LAN). Alle Aktionen laufen
+  ueber StripBay in EuroScope und sind damit wie gewohnt mit allen anderen
+  Lotsen abgeglichen.
+
+Einrichten
+  1. Am EuroScope-PC: INSTALLIEREN.bat ausfuehren (baut auch StripBayRemote.exe
+     und legt sie in diesen Ordner).
+  2. In EuroScope: .strips remote on
+     Im Chat stehen Adresse und Code (auch in den StripBay-Settings unter
+     "Remote pairing").
+  3. Fragt Windows nach der Firewall: EuroScope fuer "Private Netzwerke"
+     zulassen. Sicherer: am EuroScope-PC einmal REMOTE-FREIGABE.bat
+     ausfuehren (liegt neben INSTALLIEREN.bat).
+  4. Diesen Ordner auf das andere Geraet kopieren (USB-Stick, Netzwerk),
+     StripBayRemote.exe starten, "Search" druecken (oder Name/IP des
+     EuroScope-PCs eingeben), Code eingeben, "Connect".
+  Ab dann verbindet sich StripBay Remote beim Start von selbst. Bekommt der
+  EuroScope-PC eine neue IP-Adresse, findet StripBay Remote ihn ueber
+  seinen Namen wieder.
+
+Verbindet nicht?
+  Das Verbinden-Fenster (bzw. die Karte "NOT CONNECTED") nennt den Grund:
+  - "... answers, but StripBay Remote is not on there"
+      -> in EuroScope: .strips remote on
+  - "No answer from ..."
+      -> fast immer die Windows-Firewall am EuroScope-PC:
+         REMOTE-FREIGABE.bat dort einmal ausfuehren. Ausserdem: beide
+         Geraete im selben WLAN/LAN (kein Gast-WLAN)?
+  - "... not in the network of this device"
+      -> die Adresse gehoert zu einem anderen Netz (z. B. VPN, Gast-WLAN).
+  Selbsttest am EuroScope-PC: StripBayRemote.exe dort starten und als PC
+  "localhost" eingeben. Klappt das, liegt es am Netz oder an der Firewall.
+  Anderer PC oder neuer Code: auf die Karte "NOT CONNECTED" tippen.
+
+Hinweise
+  - Ansicht und Bereich (Delivery, Ground, Tower, Nord/Sued) gelten fuer
+    die ganze Sitzung, wechseln also auch am PC mit. Zoom, Layout,
+    Hell/Dunkel, Vollbild und Fensterposition gelten je Geraet.
+  - Toene und StripBay-Meldungen kommen auch auf dem Geraet.
+  - Verbindung weg: das Fenster wird dunkel ("NOT CONNECTED") und nimmt
+    nichts an, bis es wieder verbunden ist (automatisch alle 3 s).
+  - Neuer Code: .strips remote code new (alle Geraete muessen ihn dann neu
+    eingeben). Anderer Port: .strips remote port 47820, am Geraet
+    PC:47820 eingeben.
+  - Einstellungen des Geraets: %APPDATA%\StripBay\StripBayRemote.ini

@@ -1,0 +1,49 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Build (Release, x86)
+        run: msbuild StripBay.sln /m /p:Configuration=Release /p:Platform=x86
+
+      - name: Paket zusammenstellen
+        shell: pwsh
+        run: |
+          $v = (Select-String -Path StripBay/src/Version.h -Pattern 'STRIPBAY_VERSION\s+"([^"]+)"').Matches[0].Groups[1].Value
+          "VERSION=$v" | Out-File -Append -Encoding ascii $env:GITHUB_ENV
+          New-Item -ItemType Directory -Force dist/StripBay, dist/StripBay/Remote | Out-Null
+          Get-ChildItem -Recurse bin/Release -Filter StripBay.dll | Select-Object -First 1 | Copy-Item -Destination dist/StripBay/
+          Get-ChildItem -Recurse bin/Release -Filter StripBayRemote.exe | Select-Object -First 1 | Copy-Item -Destination dist/StripBay/Remote/
+          Copy-Item README.md dist/StripBay/
+          Copy-Item docs dist/StripBay/docs -Recurse
+          Copy-Item Remote/* dist/StripBay/Remote/ -ErrorAction SilentlyContinue
+          Get-ChildItem -Recurse dist | Select-Object FullName, Length
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StripBay-${{ env.VERSION }}
+          path: dist/StripBay
+
+      - name: Release bei Tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist/StripBay/* -DestinationPath "StripBay-${{ env.VERSION }}.zip"
+          gh release create "${{ github.ref_name }}" "StripBay-${{ env.VERSION }}.zip" "dist/StripBay/StripBay.dll" --title "StripBay ${{ env.VERSION }}" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
