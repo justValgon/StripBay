@@ -90,6 +90,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Cdm.h" />
+    <ClInclude Include="src\ErrGuard.h" />
     <ClInclude Include="src\Icao.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Hoppie.h" />

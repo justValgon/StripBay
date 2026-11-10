@@ -6,7 +6,7 @@ body:
     id: version
     attributes:
       label: StripBay version / Version
-      placeholder: "4.2.0"
+      placeholder: "4.2.1"
     validations:
       required: true
   - type: dropdown

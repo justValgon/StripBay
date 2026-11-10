@@ -1,5 +1,6 @@
 // StripBay - Touch-Fenster: Layout, Zeichnen, Drag and Drop, Detailansicht.
 #include "StripWindow.h"
+#include "ErrGuard.h"
 #include "Ink.h"
 
 #include <algorithm>
@@ -3571,7 +3572,10 @@ LRESULT CALLBACK StripWindow::WndProcStatic(HWND hwnd, UINT msg, WPARAM wp, LPAR
         SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)cs->lpCreateParams);
     }
     StripWindow* self = (StripWindow*)GetWindowLongPtrW(hwnd, GWLP_USERDATA);
-    if (self) return self->WndProc(hwnd, msg, wp, lp);
+    if (self)
+    {
+        SB_TRY return self->WndProc(hwnd, msg, wp, lp); SB_CATCH("window")
+    }
     return DefWindowProcW(hwnd, msg, wp, lp);
 }
 

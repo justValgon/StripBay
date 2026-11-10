@@ -4,7 +4,7 @@
 
 Touch flight strips for **EuroScope**: a dedicated window with electronic strips for Delivery, Apron, Ground and Tower. Ready-made profiles for Berlin **EDDB** (north/south split), Leipzig **EDDP** and Hannover **EDDV**.
 
-Authors: Luis Korb, Sören Pflug · current version: **4.2.0**
+Authors: Luis Korb, Sören Pflug · current version: **4.2.1**
 
 ![Details with history](docs/img/vorschau-details-verlauf.png)
 

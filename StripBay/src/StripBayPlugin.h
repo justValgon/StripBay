@@ -37,6 +37,16 @@ public:
     virtual void OnAirportRunwayActivityChanged(void) override;
     virtual void OnNewMetarReceived(const char* sStation, const char* sFullMetar) override;
     virtual bool OnCompileCommand(const char* sCommandLine) override;
+private:
+    // eigentliche Arbeit; die On...-Rueckrufe fangen Ausnahmen ab (siehe ErrGuard.h)
+    void DoTimer(int Counter);
+    void DoControllerAssignedDataUpdate(EuroScopePlugIn::CFlightPlan FlightPlan, int DataType);
+    void DoFlightPlanDataUpdate(EuroScopePlugIn::CFlightPlan FlightPlan);
+    void DoFlightPlanDisconnect(EuroScopePlugIn::CFlightPlan FlightPlan);
+    void DoAirportRunwayActivityChanged();
+    void DoNewMetarReceived(const char* sStation, const char* sFullMetar);
+    bool DoCompileCommand(const char* sCommandLine);
+public:
     virtual EuroScopePlugIn::CRadarScreen* OnRadarScreenCreated(const char* sDisplayName, bool NeedRadarContent,
                                                                 bool GeoReferenced, bool CanBeSaved,
                                                                 bool CanBeCreated) override;
@@ -127,7 +137,16 @@ private:
     // Mehrere Nachrichten je Flieger nacheinander.
     struct SyncQ { std::deque<std::string> msgs; std::string base; bool busy = false; long long since = 0; };
     std::map<std::string, SyncQ> m_sync;
+    // Nach der letzten Sync-Nachricht: pruefen, ob der alte Scratchpad-Text wirklich zurueck ist (bis 4 Versuche)
+    struct SpRestore { std::string base, last; int tries = 0; };
+    std::map<std::string, SpRestore> m_restore;
+    // Fremde Sync-Nachricht, die im Scratchpad stehen geblieben ist: seit wann (Takt) und welcher Text
+    struct SpStale { std::string text; long long since = 0; };
+    std::map<std::string, SpStale> m_stale;
+    std::string RealSpOf(const std::string& cs) const;
+    void ProcessRestore();
     long long m_tick = 0;
+    long long m_errShown = -100;
     void ProcessSync();
     bool IsOwnSync(const std::string& cs, const std::string& sp) const;
     void SetCtl(const std::string& callsign, bool cleared);

@@ -1,6 +1,7 @@
 // StripBay - EuroScope-Plugin
 #include "StripBayPlugin.h"
 #include "Tone.h"
+#include "ErrGuard.h"
 
 #include <algorithm>
 #include <cmath>
@@ -257,8 +258,9 @@ static int ParseGoAround(const std::string& sp)
 
 static std::string DlTime(long long t)
 {
+    if (t < 0 || t > 253402300799LL) return std::string("----");   // ausserhalb dessen, was gmtime kann
     time_t tt = (time_t)t;
-    struct tm g;
+    struct tm g = {};
 #ifdef _WIN32
     gmtime_s(&g, &tt);
 #else
@@ -466,6 +468,7 @@ StripBayPlugin::StripBayPlugin()
       m_window(this)
 {
     g_plugin = this;
+    SbInstallErrorHandlers();
     // festgelegtes Platz-Profil (sonst automatisch, bis dahin Berlin)
     if (const char* v = GetDataFromSettings("Profile"))
     {
@@ -571,7 +574,22 @@ void StripBayPlugin::Msg(const std::string& utf8)
 // ---------------------------------------------------------------------------
 void StripBayPlugin::OnTimer(int Counter)
 {
+    SB_TRY DoTimer(Counter); SB_CATCH("OnTimer")
+}
+
+void StripBayPlugin::DoTimer(int Counter)
+{
     ++m_tick;
+    {
+        // aufgefangene Fehler melden (hoechstens alle 30 s, der Text steht auch in der Diagnose)
+        std::string er; int n = 0;
+        if (SbTakeError(er, n) && m_tick - m_errShown >= 30)
+        {
+            m_errShown = m_tick;
+            Log("ERR " + er + " (x" + std::to_string(n) + ")");
+            Msg("StripBay: internal error caught (" + er + ", " + std::to_string(n) + "x). Please report it with .strips diag.");
+        }
+    }
     ProcessSync();
     ProcessAutoStands();
     ProcessAutoSquawks();
@@ -647,6 +665,11 @@ void StripBayPlugin::OnTimer(int Counter)
 
 void StripBayPlugin::OnFlightPlanControllerAssignedDataUpdate(CFlightPlan FlightPlan, int DataType)
 {
+    SB_TRY DoControllerAssignedDataUpdate(FlightPlan, DataType); SB_CATCH("ControllerAssignedDataUpdate")
+}
+
+void StripBayPlugin::DoControllerAssignedDataUpdate(CFlightPlan FlightPlan, int DataType)
+{
     if (!FlightPlan.IsValid()) return;
     std::string cs = S(FlightPlan.GetCallsign());
 
@@ -659,6 +682,13 @@ void StripBayPlugin::OnFlightPlanControllerAssignedDataUpdate(CFlightPlan Flight
         // eigene, gerade gesendete Nachricht: Zustand ist lokal schon gesetzt (und evtl.
         // inzwischen weiter geaendert) -> nicht noch einmal auswerten
         if (IsOwnSync(cs, sp)) sp.clear();
+        // fremde Nachricht merken (wird sie nicht vom Absender zurueckgesetzt, raeumt ProcessRestore sie nach 15 s weg)
+        if (!sp.empty() && IsTransientScratch(sp) && !m_sync.count(cs) && !m_restore.count(cs))
+        {
+            auto st = m_stale.find(cs);
+            if (st == m_stale.end() || st->second.text != sp) m_stale[cs] = SpStale{ sp, m_tick };
+        }
+        else if (!IsTransientScratch(S(FlightPlan.GetControllerAssignedData().GetScratchPadString()))) m_stale.erase(cs);
         if (!sp.empty()) HistSync(cs, sp, false);
 
         // Merker eines anderen Lotsen: er ist neuer als alles, was bei mir fuer denselben Merker noch in der
@@ -836,6 +866,11 @@ void StripBayPlugin::OnFlightPlanControllerAssignedDataUpdate(CFlightPlan Flight
 
 void StripBayPlugin::OnFlightPlanFlightPlanDataUpdate(CFlightPlan FlightPlan)
 {
+    SB_TRY DoFlightPlanDataUpdate(FlightPlan); SB_CATCH("FlightPlanDataUpdate")
+}
+
+void StripBayPlugin::DoFlightPlanDataUpdate(CFlightPlan FlightPlan)
+{
     if (!FlightPlan.IsValid()) return;
     std::string cs = S(FlightPlan.GetCallsign());
     auto it = m_entries.find(cs);
@@ -852,6 +887,11 @@ void StripBayPlugin::OnFlightPlanFlightPlanDataUpdate(CFlightPlan FlightPlan)
 }
 
 void StripBayPlugin::OnFlightPlanDisconnect(CFlightPlan FlightPlan)
+{
+    SB_TRY DoFlightPlanDisconnect(FlightPlan); SB_CATCH("FlightPlanDisconnect")
+}
+
+void StripBayPlugin::DoFlightPlanDisconnect(CFlightPlan FlightPlan)
 {
     ForgetFlight(S(FlightPlan.GetCallsign()));
     PushBoard();
@@ -880,6 +920,8 @@ void StripBayPlugin::ForgetFlight(const std::string& cs)
     m_histLast.erase(cs);
     m_gsByMeAt.erase(cs);
     m_realSp.erase(cs);
+    m_restore.erase(cs);
+    m_stale.erase(cs);
     m_offer.erase(cs);
     m_offerByMe.erase(cs);
     m_offerAt.erase(cs);
@@ -909,6 +951,11 @@ void StripBayPlugin::ForgetFlight(const std::string& cs)
 }
 
 void StripBayPlugin::OnNewMetarReceived(const char* sStation, const char* sFullMetar)
+{
+    SB_TRY DoNewMetarReceived(sStation, sFullMetar); SB_CATCH("NewMetarReceived")
+}
+
+void StripBayPlugin::DoNewMetarReceived(const char* sStation, const char* sFullMetar)
 {
     std::string st = Upper(Trim(S(sStation)));
     std::string m = Trim(S(sFullMetar));
@@ -941,6 +988,11 @@ void StripBayPlugin::UpdateWx()
 }
 
 void StripBayPlugin::OnAirportRunwayActivityChanged(void)
+{
+    SB_TRY DoAirportRunwayActivityChanged(); SB_CATCH("AirportRunwayActivityChanged")
+}
+
+void StripBayPlugin::DoAirportRunwayActivityChanged()
 {
     RefreshAirports();
     RefreshRunways();
@@ -2747,7 +2799,7 @@ bool StripBayPlugin::ApplyGroundState(const std::string& cs, GroundCmd cmd)
     if (ParseGroundState(S(fp.GetGroundState())) == cmd) return true;
 
     std::string spBefore = S(fp.GetControllerAssignedData().GetScratchPadString());
-    if (IsTransientScratch(spBefore) || IsGsCommand(spBefore)) spBefore.clear();   // nie einen alten Befehl wiederholen
+    if (IsTransientScratch(spBefore) || IsGsCommand(spBefore)) spBefore = RealSpOf(cs);   // nie einen alten Befehl wiederholen, den echten Text aber behalten
     bool ok = false;
     struct Applying { bool& f; Applying(bool& x) : f(x) { f = true; } ~Applying() { f = false; } } applying(m_applyingGs);
     m_gsByMeAt[cs] = m_tick;
@@ -3021,7 +3073,7 @@ void StripBayPlugin::SendScratch(const std::string& cs, const std::string& text)
             auto rs = m_realSp.find(cs);
             q.base = rs != m_realSp.end() ? rs->second : std::string();
         }
-        else q.base = IsGsCommand(before) ? std::string() : before;
+        else q.base = IsGsCommand(before) ? RealSpOf(cs) : before;
     }
     // Noch nicht gesendete Nachricht derselben Art (".SB_HS_", ".SB_RS_" ...) ersetzen:
     // es zaehlt nur der letzte Stand
@@ -3054,8 +3106,53 @@ bool StripBayPlugin::IsOwnSync(const std::string& cs, const std::string& sp) con
 
 // Jeden Takt: gesendete Nachrichten (seit mindestens einem Takt im Netz) abschliessen,
 // naechste setzen oder den alten Scratchpad-Inhalt zurueck
+// Prueft nach jeder Sync-Runde, ob der alte Scratchpad-Text zurueck ist, und raeumt fremde
+// Sync-Nachrichten weg, die laenger als 15 s unveraendert im Scratchpad stehen (Absender
+// weg oder sein Zuruecksetzen ist ausgefallen). Es wird nur ersetzt, was eine Sync-Nachricht ist.
+void StripBayPlugin::ProcessRestore()
+{
+    for (auto it = m_restore.begin(); it != m_restore.end();)
+    {
+        CFlightPlan fp = FlightPlanSelect(it->first.c_str());
+        if (!fp.IsValid() || m_sync.count(it->first)) { it = m_restore.erase(it); continue; }
+        std::string cur = S(fp.GetControllerAssignedData().GetScratchPadString());
+        // nur nachbessern, wenn noch genau unsere letzte Nachricht dasteht (eine neue fremde nicht anfassen)
+        if (cur == it->second.last && IsTransientScratch(cur) && it->second.tries < 4)
+        {
+            fp.GetControllerAssignedData().SetScratchPadString(it->second.base.c_str());
+            ++it->second.tries;
+            ++it;
+            continue;
+        }
+        it = m_restore.erase(it);
+    }
+    for (auto it = m_stale.begin(); it != m_stale.end();)
+    {
+        CFlightPlan fp = FlightPlanSelect(it->first.c_str());
+        if (!fp.IsValid()) { it = m_stale.erase(it); continue; }
+        if (m_sync.count(it->first) || m_restore.count(it->first)) { ++it; continue; }
+        std::string cur = S(fp.GetControllerAssignedData().GetScratchPadString());
+        if (cur != it->second.text || !IsTransientScratch(cur)) { it = m_stale.erase(it); continue; }
+        if (m_tick - it->second.since >= 15)
+        {
+            fp.GetControllerAssignedData().SetScratchPadString(RealSpOf(it->first).c_str());
+            Log("STALE " + it->first + " " + cur + " cleared");
+            it = m_stale.erase(it);
+            continue;
+        }
+        ++it;
+    }
+}
+
+std::string StripBayPlugin::RealSpOf(const std::string& cs) const
+{
+    auto rs = m_realSp.find(cs);
+    return rs != m_realSp.end() ? rs->second : std::string();
+}
+
 void StripBayPlugin::ProcessSync()
 {
+    ProcessRestore();
     for (auto it = m_sync.begin(); it != m_sync.end();)
     {
         SyncQ& q = it->second;
@@ -3072,7 +3169,15 @@ void StripBayPlugin::ProcessSync()
             else
             {
                 std::string cur = S(fp.GetControllerAssignedData().GetScratchPadString());
-                if (IsTransientScratch(cur) || cur.empty()) fp.GetControllerAssignedData().SetScratchPadString(q.base.c_str());
+                if (IsTransientScratch(cur) || cur.empty())
+                {
+                    fp.GetControllerAssignedData().SetScratchPadString(q.base.c_str());
+                    SpRestore r;
+                    r.base = q.base;
+                    r.last = cur;
+                    r.tries = 1;
+                    m_restore[it->first] = r;   // naechster Takt: stimmt es wirklich?
+                }
                 it = m_sync.erase(it);
                 continue;
             }
@@ -6397,6 +6502,12 @@ void StripBayPlugin::SaveOptions()
 // Befehle: .strips ...
 // ---------------------------------------------------------------------------
 bool StripBayPlugin::OnCompileCommand(const char* sCommandLine)
+{
+    SB_TRY return DoCompileCommand(sCommandLine); SB_CATCH("Command")
+    return true;
+}
+
+bool StripBayPlugin::DoCompileCommand(const char* sCommandLine)
 {
     std::vector<std::string> t = Split(Trim(S(sCommandLine)), " \t");
     if (t.empty()) return false;

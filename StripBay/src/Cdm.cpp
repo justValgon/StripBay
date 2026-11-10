@@ -374,7 +374,7 @@ std::string VacdmClient::Status()
 
 std::string FormatIsoUtc(long long utc)
 {
-    if (utc <= 0) return "1969-12-31T23:59:59.999Z";
+    if (utc <= 0 || utc > 253402300799LL) return "1969-12-31T23:59:59.999Z";
     time_t t = (time_t)utc;
     struct tm g = {};
 #ifdef _WIN32

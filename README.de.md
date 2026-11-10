@@ -4,7 +4,7 @@
 
 Touch-Flugstreifen für **EuroScope**: ein eigenes Fenster mit elektronischen Flugstreifen für Delivery, Apron, Ground und Tower. Fertige Profile sind für Berlin **EDDB** (Nord/Süd getrennt), Leipzig **EDDP** und Hannover **EDDV** vorhanden.
 
-Autoren: Luis Korb, Sören Pflug · aktuelle Version: **4.2.0**
+Autoren: Luis Korb, Sören Pflug · aktuelle Version: **4.2.1**
 
 ![Details mit Verlauf](docs/img/vorschau-details-verlauf.png)
 

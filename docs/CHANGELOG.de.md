@@ -1,5 +1,16 @@
 # Änderungsverlauf
 
+## Neu in 4.2.1
+
+Fehlerbehebung, kein Protokollwechsel; verträgt sich mit allen 4.x.
+
+- **Scratchpad (Feld REMARK) bleibt sauber:** StripBay schreibt für die Abstimmung unter den Lotsen kurz Meldungen (`.SB_…`) ins Scratchpad und stellt danach den alten Text wieder her. Das konnte ausfallen, sodass eine Meldung stehen blieb, und ein eigener Text wurde in Randfällen überschrieben. Jetzt gilt:
+  - Nach jeder Runde wird geprüft, ob der alte Text wirklich zurück ist; bei Bedarf wird bis zu viermal nachgebessert.
+  - Eine fremde Meldung, die länger als 15 s unverändert stehen bleibt (Absender weg oder sein Zurücksetzen ausgefallen), wird durch den letzten echten Text ersetzt. Echter Text wird dabei nie angefasst.
+  - Bei Ground-State-Befehlen geht ein eigener Text auch dann nicht verloren, wenn gerade eine Meldung im Scratchpad steht.
+- **„Es wurde ein falsches Argument festgestellt“:** Ausnahmen in StripBay und ungültige Argumente von Systemfunktionen werden abgefangen, statt bis in EuroScope durchzuschlagen. Im Chat erscheint dann „StripBay: internal error caught (Ort, Anzahl)“ (höchstens alle 30 s) und die Diagnose (`.strips diag`) enthält die Meldung. Zeitangaben außerhalb des gültigen Bereichs (vACDM, Datalink) lösen den Fehler nicht mehr aus. Tritt die Meldung weiter auf, bitte die Diagnose an ein Issue anhängen.
+- Prüfung: neue Unit-Tests (Wiederherstellung, Aufräumen fremder Meldungen, Ground State bei stehender Meldung, Fehlerfang); Mehr-Lotsen-Test und Zufallstest (Berlin, Hannover, Leipzig) bestanden.
+
 ## Neu in 4.2.0
 
 Sieben neue Funktionen. Kein Wechsel der Hauptversion: 4.2 arbeitet mit 4.0 und 4.1 zusammen. Lotsen mit 4.0 oder 4.1 sehen Rollweg und Enteisung nicht; alles andere bleibt synchron. Ein Remote-Gerät mit 4.0 oder 4.1 bleibt verbunden, zeigt die neuen Felder aber erst nach dem Kopieren des neuen Ordners `Remote`.
